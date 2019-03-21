@@ -1,0 +1,200 @@
+
+
+# remove unrelated variables ! 
+#Recode_intervention$BrCa <- ifelse(Recode_intervention$Case_YN==0,0,1) 
+colnames(Recode_intervention)
+input <- Recode_intervention[ ,-which(names(Recode_intervention) %in% c("Case_YN","ID","T2"))]
+output <- as.factor(Recode_intervention$Case_YN)
+c(dim(input), dim(output))
+
+# using Recode_intervention data:
+X <- as.data.frame(input); Y <- output
+neg <- "1"   # "Control" == "1"
+
+# Side note: There is a function name collision for "crossval", the same method is present in 
+# the "mlr" (machine Learning in R) package and in the "crossval" package.  
+# To specify a function call from a specific package do:  packagename::functionname()
+
+set.seed(115) 
+
+my.ada <- function (train.x, train.y, test.x, test.y, negative, formula){
+  ada.fit <- ada(train.x, train.y)
+  predict.y <- predict(ada.fit, test.x)
+  #count TP, FP, TN, FN, Accuracy, etc.
+  out <- confusionMatrix(test.y, predict.y, negative = negative)
+  # negative  is the label of a negative "null" sample (default: "control").
+  return (out)
+}
+?crossval
+
+cv.out <- crossval::crossval(my.ada, X, Y, K = 5, B = 2, negative = neg)
+# the label of a negative "null" sample (default: "control")
+
+out <- diagnosticErrors(cv.out$stat) 
+print(cv.out$stat)
+#FP    TP    TN    FN 
+#9.5  68.8 161.9  17.2  
+print(out)
+##acc      sens      spec       ppv       npv       lor 
+##0.8827647 0.7201365 0.9388235 0.8022814 0.9068182 3.6760038
+
+
+
+# Logistic 
+X =as.matrix(input)    # Predictor variables
+Y =as.matrix(output) 
+lm.logit <- glm(as.numeric(Y) ~ ., data = as.data.frame(X), family = "binomial")
+ynew <- predict(lm.logit, as.data.frame(X)); #plot(ynew)
+ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1); # plot(ynew2)
+
+predfun.logit = function(train.x, train.y, test.x, test.y, neg)
+{   lm.logit <- glm(train.y ~ ., data = train.x, family = "binomial")
+ynew = predict(lm.logit, test.x )
+# compute TP, FP, TN, FN
+ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1)
+out = confusionMatrix(test.y, ynew2, negative=neg)  # Binary outcome, we can use confusionMatrix
+return( out )
+}
+
+cv.out.logit = crossval::crossval(predfun.logit, as.data.frame(X), as.numeric(Y), K=9, B=10, neg="1")
+cv.out.logit$stat.cv
+print(cv.out.logit$stat)
+#FP    TP    TN    FN 
+#49.0  79.4 122.4   6.6  
+diagnosticErrors(cv.out.logit$stat)
+#acc      sens      spec       ppv       npv       lor 
+#0.7191601 0.9249147 0.6482353 0.4754386 0.9616056 3.1223676 
+
+
+#KNN qda lda
+
+library("class")
+
+X <- as.data.frame(input); Y <- output
+predfun.knn =function(train.x, train.y, test.x, test.y, neg)
+{
+  require("class")
+  knn.fit =knn(train.x, test.x, cl =train.y, prob=T)  # knn is already a prediction function!!!
+  # ynew = predict(knn.fit, test.x)$class           # no need of another prediction, in this case
+  out.knn =confusionMatrix(test.y, knn.fit, negative=neg)
+  return( out.knn )
+}   
+
+predfun.qda = function(train.x, train.y, test.x, test.y, negative)
+{
+  require("MASS") # for lda function
+  qda.fit = qda(train.x, grouping=train.y)
+  ynew = predict(qda.fit,test.x)$class
+  out.qda = confusionMatrix(test.y, ynew, negative=negative)
+  return( out.qda )
+}  
+
+
+predfun.lda = function(train.x, train.y, test.x, test.y, neg)
+{
+  require("MASS")
+  lda.fit = lda(train.x, grouping=train.y)
+  ynew = predict(lda.fit, test.x)$class
+  out.lda = confusionMatrix(test.y, ynew, negative=neg)
+  return( out.lda )
+}
+
+
+predfun.lm =function(train.x, train.y, test.x, test.y)
+{     lm.fit =lm(train.y ~. , data=train.x)
+ynew =predict(lm.fit, test.x )
+# compute squared error risk (MSE)
+out =mean( (ynew -test.y)^2)
+
+#out.lda = confusionMatrix(test.y, ynew, negative=neg)
+#out =mean( (ynew -test.y)^2)  out = confusionMatrix(test.y, ynew, negative=neg)
+# note that, in general, when fitting linear model to continuous outcome variable (Y),
+# we can???t use the out<-confusionMatrix(test.y, ynew, negative=negative), as it requires a binary outcome
+# this is why we use the MSE as an estimate of the discrepancy between observed & predicted values
+return(out)
+}
+
+
+
+cv.out.lm =crossval::crossval(predfun.lm, as.data.frame(X), as.numeric(Y), K=5, B=20) #c(cv.out.lm$stat, cv.out.lm$stat.se) 
+cv.out.lm
+#$stat
+#0.0997666
+#$stat.se
+#0.001173287
+
+actuals_preds <- data.frame(cbind(actuals=Recode_intervention$Case_YN, predicteds=ynew))
+correlation_accuracy.lm <- cor(actuals_preds)#0.6812951
+
+cv.out.knn =crossval::crossval(predfun.knn, X, Y, K=5, B=2, neg="1")
+cv.out.qda = crossval::crossval(predfun.qda, as.data.frame(X), as.factor(Y), K=10, B=20, neg="1")
+cv.out.lda = crossval::crossval(predfun.lda, X, Y, K=5, B=2, neg="1")
+
+##sd(squared.residuals)/sqrt(10)
+
+
+
+
+print(cv.out.qda$stat)
+#  FP   TP   TN   FN 
+#43.6  75.0 127.8  11.0
+
+print(cv.out.knn$stat)
+#  FP   TP   TN   FN 
+#26.8  56.9 144.6  29.1 
+
+print(cv.out.lda$stat)
+#  FP   TP   TN   FN 
+#15.8  57.1 155.6  28.9 
+
+cv.out.lda$stat.cv
+
+
+diagnosticErrors(cv.out.lda$stat)
+diagnosticErrors(cv.out.lda$stat.se)
+#       acc       sens       spec        ppv        npv        lor 
+# 0.8692038 0.7815700 0.8994118 0.7281399 0.9227520 3.4655446 
+diagnosticErrors(cv.out.qda$stat)
+diagnosticErrors(cv.out.qda$stat.se)
+#      acc      sens      spec       ppv       npv       lor 
+#0.8674541 0.7713311 0.9005882 0.7278583 0.9195195 3.4196201  
+diagnosticErrors(cv.out.knn$stat)
+#       acc       sens       spec        ppv        npv        lor 
+#0.8088364 0.6109215 0.8770588 0.6313933 0.8673647 2.4160554 
+
+
+# random forest
+library(randomForest)
+require(randomForest)
+library(caret)
+
+rf_randoms<-Recode_intervention
+rf_randoms$Case_YN <- as.factor(rf_randoms$Case_YN)
+rf.mdl <- randomForest(rf_randoms[,1:9], rf_randoms[,"Case_YN"], ntree=100)
+
+rf.mdl$votes
+rf.cv <- rfcv( rf_randoms[,1:9], rf_randoms[,"Case_YN"], cv.fold = 3)
+#with(rf.cv, plot(n.var, error.cv, type="b", col="red"))
+#rf.cv$error.cv
+#confussion.rf<-confusionMatrix(rf.cv$predicted, rf_randoms$Case_YN)
+#confussion.rf
+rf_random_AUC <- rf.mdl$confusion # (217+799)/(1143)
+
+rfgail<-as.data.frame(rf.mdl$votes)
+Abrisk_Intervention$MLcat<-ifelse(rfgail$`1`<0.2,0,1)
+
+table(Abrisk_Intervention$AGEcata,Abrisk_Intervention$riskcata,Abrisk_Intervention$MLcat)
+
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==3&Abrisk_Intervention$riskcata==0])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==4&Abrisk_Intervention$riskcata==0])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==5&Abrisk_Intervention$riskcata==0])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==6&Abrisk_Intervention$riskcata==0])
+
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==3&Abrisk_Intervention$riskcata==1])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==4&Abrisk_Intervention$riskcata==1])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==5&Abrisk_Intervention$riskcata==1])
+table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==6&Abrisk_Intervention$riskcata==1])
+
+length(Abrisk_Intervention$MLcat)
+
+
