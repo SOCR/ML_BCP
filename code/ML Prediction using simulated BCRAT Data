@@ -528,3 +528,173 @@ rf.cv <- rfcv( rf_randoms[,1:9], rf_randoms[,"Case_signalYN"], cv.fold = 3)
 #confussion.rf
 rf_random_AUC <- rf.mdl$confusion # (570+543)/1200=0.9275
 
+#imputed1
+```{r cars}
+
+# Define a new classification result-reporting function
+detach("package:caret", unload=TRUE)
+# remove unrelated variables ! 
+#imputed1$BrCa <- ifelse(imputed1$Case_signalYN==0,0,1) 
+colnames(imputed1)
+input <- imputed1[ ,-which(names(imputed1) %in% c("Case_signalYN","ID","T2"))]
+output <- as.factor(imputed1$Case_signalYN)
+c(dim(input), dim(output))
+
+# using imputed1 data:
+X <- as.data.frame(input); Y <- output
+neg <- "1"   # "Control" == "1"
+
+# Side note: There is a function name collision for "crossval", the same method is present in 
+# the "mlr" (machine Learning in R) package and in the "crossval" package.  
+# To specify a function call from a specific package do:  packagename::functionname()
+
+
+set.seed(115) 
+
+cv.out <- crossval::crossval(my.ada, X, Y, K = 5, B = 2, negative = neg)
+# the label of a negative "null" sample (default: "control")
+
+out <- diagnosticErrors(cv.out$stat) 
+print(cv.out$stat)
+#FP    TP    TN    FN 
+#10.1 112.4 108.7   8.8 
+print(out)
+##acc      sens      spec       ppv       npv       lor 
+##0.9212500 0.9273927 0.9149832 0.9175510 0.9251064 4.9233686 
+
+
+
+
+# Logistic 
+X =as.matrix(input)    # Predictor variables
+Y =as.matrix(output) 
+lm.logit <- glm(as.numeric(Y) ~ ., data = as.data.frame(X), family = "binomial")
+ynew <- predict(lm.logit, as.data.frame(X)); #plot(ynew)
+ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1); # plot(ynew2)
+
+predfun.logit = function(train.x, train.y, test.x, test.y, neg)
+{   lm.logit <- glm(train.y ~ ., data = train.x, family = "binomial")
+ynew = predict(lm.logit, test.x )
+# compute TP, FP, TN, FN
+ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1)
+out = confusionMatrix(test.y, ynew2, negative=neg)  # Binary outcome, we can use confusionMatrix
+return( out )
+}
+
+cv.out.logit = crossval::crossval(predfun.logit, as.data.frame(X), as.numeric(Y), K=5, B=2, neg="1")
+cv.out.logit$stat.cv
+print(cv.out.logit$stat)
+#FP    TP    TN    FN 
+#7.8 112.2 111.0   9.0
+diagnosticErrors(cv.out.logit$stat)
+#acc      sens      spec       ppv       npv       lor 
+#0.9300000 0.9257426 0.9343434 0.9350000 0.9250000 5.1784649  
+
+
+#KNN qda lda
+
+library("class")
+
+X <- as.data.frame(input); Y <- output
+predfun.knn =function(train.x, train.y, test.x, test.y, neg)
+{
+  require("class")
+  knn.fit =knn(train.x, test.x, cl =train.y, prob=T)  # knn is already a prediction function!!!
+  # ynew = predict(knn.fit, test.x)$class           # no need of another prediction, in this case
+  out.knn =confusionMatrix(test.y, knn.fit, negative=neg)
+  return( out.knn )
+}   
+
+predfun.qda = function(train.x, train.y, test.x, test.y, negative)
+{
+  require("MASS") # for lda function
+  qda.fit = qda(train.x, grouping=train.y)
+  ynew = predict(qda.fit,test.x)$class
+  out.qda = confusionMatrix(test.y, ynew, negative=negative)
+  return( out.qda )
+}  
+
+
+predfun.lda = function(train.x, train.y, test.x, test.y, neg)
+{
+  require("MASS")
+  lda.fit = lda(train.x, grouping=train.y)
+  ynew = predict(lda.fit, test.x)$class
+  out.lda = confusionMatrix(test.y, ynew, negative=neg)
+  return( out.lda )
+}
+
+
+predfun.lm =function(train.x, train.y, test.x, test.y)
+{     lm.fit =lm(train.y ~. , data=train.x)
+ynew =predict(lm.fit, test.x )
+# compute squared error risk (MSE)
+out =mean( (ynew -test.y)^2)
+
+#out.lda = confusionMatrix(test.y, ynew, negative=neg)
+#out =mean( (ynew -test.y)^2)  out = confusionMatrix(test.y, ynew, negative=neg)
+# note that, in general, when fitting linear model to continuous outcome variable (Y),
+# we can???t use the out<-confusionMatrix(test.y, ynew, negative=negative), as it requires a binary outcome
+# this is why we use the MSE as an estimate of the discrepancy between observed & predicted values
+return(out)
+}
+
+
+
+cv.out.lm =crossval::crossval(predfun.lm, as.data.frame(X), as.numeric(Y), K=5, B=20) #c(cv.out.lm$stat, cv.out.lm$stat.se) 
+cv.out.lm
+#$stat
+#0.09838956
+#$stat.se
+#0.0006133364
+
+actuals_preds <- data.frame(cbind(actuals=imputed1$Case_signalYN, predicteds=ynew))
+correlation_accuracy.lm <- cor(actuals_preds) # 0.7823658
+
+cv.out.knn =crossval::crossval(predfun.knn, X, Y, K=10, B=20, neg="1")
+cv.out.qda = crossval::crossval(predfun.qda, as.data.frame(X), as.factor(Y), K=10, B=20, neg="1")
+cv.out.lda = crossval::crossval(predfun.lda, X, Y, K=10, B=20, neg="1")
+
+
+
+
+
+print(cv.out.qda$stat)
+#  FP   TP   TN   FN 
+#10.8 110.9 108.0  10.3   
+
+print(cv.out.knn$stat)
+#  FP   TP   TN   FN 
+# 11.9 110.5 106.9  10.7
+
+print(cv.out.lda$stat)
+#  FP   TP   TN   FN 
+#7.6 111.4 111.2   9.8 
+
+
+diagnosticErrors(cv.out.lda$stat)
+diagnosticErrors(cv.out.lda$stat.se)
+#       acc       sens       spec        ppv        npv        lor 
+# 0.9275000 0.9191419 0.9360269 0.9361345 0.9190083 5.1139271 
+diagnosticErrors(cv.out.qda$stat)
+#      acc      sens      spec       ppv       npv       lor 
+#0.9120833 0.9150165 0.9090909 0.9112572 0.9129332 4.6790701  
+diagnosticErrors(cv.out.knn$stat)
+#       acc       sens       spec        ppv        npv        lor 
+#0.9058333 0.9117162 0.8998316 0.9027778 0.9090136 4.5301272 
+
+# random forest
+library(randomForest)
+require(randomForest)
+library(caret)
+
+rf_randoms<-imputed1
+rf_randoms$Case_signalYN <- as.factor(rf_randoms$Case_signalYN)
+rf.mdl <- randomForest(rf_randoms[,1:9], rf_randoms[,"Case_signalYN"], ntree=501)
+rf.cv <- rfcv( rf_randoms[,1:9], rf_randoms[,"Case_signalYN"], cv.fold = 3)
+#with(rf.cv, plot(n.var, error.cv, type="b", col="red"))
+#rf.cv$error.cv
+#confussion.rf<-confusionMatrix(rf.cv$predicted, rf_randoms$Case_signalYN)
+#confussion.rf
+rf_random_AUC <- rf.mdl$confusion # (563+537)/1200=0.9166667
+
