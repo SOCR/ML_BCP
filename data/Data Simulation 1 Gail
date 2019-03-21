@@ -1,0 +1,100 @@
+setwd("~/Desktop/ML_Gail")
+NumSubj <- 1200
+
+ID<-sample(1200, 1200, replace=F)
+
+#age 
+T1 <- as.integer(rnorm(NumSubj, 52,5))
+table(T1)
+# 35  36  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67 
+#  1   1   2   4   4  11  21  21  23  40  61  58  72  78  92 103  98 115  85  71  55  40  40  27  21  22  15   7   7   3   1   1 
+T2 <- c(rep(90, 1200))
+
+# Number of Biopsy 
+N_Biop<- sample(c(0,1,2,3,4,5,6),size=1200, replace=TRUE, prob=c(0.8,0.1,0.02,0.07,0.005,0.004,0.001))#Need change in HypPlas Size
+table(N_Biop)
+count_Biop<-length(N_Biop[N_Biop!=0])
+count_Biop  #244
+#N_Biop
+#0   1   2   3   4   5   6 
+#956 122  27  86   6   3 
+
+# Hyperplasia
+HypPlas <- ifelse(N_Biop!=0,(sample(c(0,1),size=count_Biop,replace=TRUE,prob=c(0.8,0.2))),99) #99=unk or not applicable
+table(HypPlas)
+#HypPlas
+#  0   1  99 
+#183  45 972 
+
+#Age of menarche
+AgeMen<- as.integer(rnorm(NumSubj, 13,1))
+table(AgeMen)
+#AgeMen
+#  9  10  11  12  13  14  15  16  17 
+#  1  22 161 403 435 156  20   1   1 
+
+#Age first live birth 
+Age1st<- c(ifelse(runif(NumSubj)<.8 , as.integer(rnorm(NumSubj,25,1.5)),98)) #98=nulliparous
+table(Age1st)
+#Age1st
+#20  21  22  23  24  25  26  27  28  29  98 
+# 1  24  59 147 250 231 147  75  13   4 249 
+
+#Number of Rekatives have breast cancer
+N_Rels<- sample(c(0,1,2,3,4,5,6),size=1200, replace=TRUE, prob=c(0.6,0.2,0.1,0.08,0.01,0.005,0.005))
+table(N_Rels)
+#N_Rels
+#  0   1   2   3   4   5   6 
+#737 213 118 103  10   9  10 
+
+#Race
+Race <- sample(c(1:7),size=1200, replace=TRUE, prob=c(0.5,0.2,0.2,0.08,0.01,0.005,0.005))
+table(Race)
+#Race
+#  1   2   3   4   5   6   7 
+#603 241 247  90   7   9   3
+
+#BRCA1 <- sample(c(0,1,"NA"),size=1200, replace=TRUE, prob=c(0.2,0.1,0.7))
+#BRCA2 <- sample(c(0,1,"NA"),size=1200, replace=TRUE, prob=c(0.2,0.05,0.75))
+#Weight <- as.integer(rnorm(NumSubj, 80,10))
+#Hight <- as.integer(rnorm(NumSubj, 173,10))
+
+# having cancer
+Case_Random<-sample(c(0,1),size=1200, replace=TRUE, prob=c(0.5,0.5))
+Case_signal<-c(0.3*T1+0.2*N_Biop+0.1*N_Rels+0.1*AgeMen+0.3*rnorm(20,3))
+median(Case_signal)
+Case_signalYN<-ifelse(Case_signal>17.91104, 1, 0)
+table(Case_Random)
+#Case_Random
+#   0    1 
+# 610  590 
+table(Case_signalYN)
+#Case_signalYN
+#   0    1 
+# 600  600 
+
+
+# Data (putting all components together)
+
+sim_Gail_Random<- cbind(ID,T1,T2,N_Biop,HypPlas,AgeMen,Age1st,N_Rels,Race,Case_Random)
+sim_Gail_signal<- cbind(ID,T1,T2,N_Biop,HypPlas,AgeMen,Age1st,N_Rels,Race,Case_signalYN)
+
+#Assign the column names
+
+colnames(sim_Gail_Random) <- c(
+  "ID",
+  "T1","T2",
+  "N_Biop", "HypPlas", "AgeMen",
+  "Age1st", "N_Rels", "Race", "Case_Random")
+sim_Gail_Random<- data.frame(sim_Gail_Random)
+summary(sim_Gail_Random)
+str(sim_Gail_Random)
+
+colnames(sim_Gail_signal) <- c(
+  "ID",
+  "T1","T2",
+  "N_Biop", "HypPlas", "AgeMen",
+  "Age1st", "N_Rels", "Race", "Case_signalYN")
+sim_Gail_signal<- data.frame(sim_Gail_signal)
+summary(sim_Gail_signal)
+str(sim_Gail_signal)
