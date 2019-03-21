@@ -58,3 +58,36 @@ diagnosticErrors(sim_GSig_addNA_AUC)
 #0.4241667  0.4183865  0.4287856  0.3692053  0.4798658 -0.6162081
 
 AUC(sim_Gail_signal_addNA_prediction$Predition_Gail_signal_add_NA, sim_Gail_signal_addNA_prediction$Case_signalYN, label.ordering = NULL)
+
+#imputed1 gail risk
+imputed1$HypPlas<-as.numeric(as.character(imputed1$HypPlas))
+imputed1$Case_signalYN<-as.numeric(as.character(imputed1$Case_signalYN))
+imputed1$Case_signalYN<-as.numeric(imputed1$Case_signalYN)
+imputed1$AgeMen<-round(imputed1$AgeMen)
+imputed1$Age1st<-round(imputed1$Age1st)
+imputed1$N_Rels<-round(imputed1$N_Rels)
+imputed1$N_Rels<-ifelse(imputed1$N_Rels<0,0,imputed1$N_Rels)
+imputed1$Age1st<-ifelse(imputed1$Age1st<0,98,imputed1$Age1st)
+imputed1$Age1st<-ifelse(imputed1$Age1st>45,40,imputed1$Age1st)
+imputed1$Age1st<-ifelse(imputed1$Age1st<16,18,imputed1$Age1st)
+imputed1$Age1st<-ifelse(imputed1$Age1st>imputed1$T1,T1,imputed1$Age1st)
+table(imputed1$HypPlas)
+str(imputed1)
+Gail.imputed1 <- risk.summary(imputed1)
+Gail.imputed1<-as.data.frame(Gail.imputed1)
+str(Gail.imputed1)
+Gail.imputed1$AbsRisk<-as.numeric(as.character(Gail.imputed1$AbsRisk))
+str(Gail.imputed1)
+Predition_Gail_imput1 <- ifelse(Gail.imputed1$AbsRisk<median(Gail.imputed1$AbsRisk,na.rm=T), 0, 1)
+table(Predition_Gail_imput1)
+sim_Gail_imput1_prediction<-cbind(imputed1,Predition_Gail_imput1)
+
+#Calculate AUC 
+sim_Gail_imput1_prediction_AUC = confusionMatrix(sim_Gail_imput1_prediction$Case_signalYN, sim_Gail_imput1_prediction$Predition_Gail_imput1, negative=0)
+# FP  TP  TN  FN 
+#359 241 308 292 
+diagnosticErrors(sim_Gail_imput1_prediction_AUC)
+#      acc       sens       spec        ppv        npv        lor 
+#0.4575000  0.4521576  0.4617691  0.4016667  0.5133333 -0.3451795
+
+AUC(sim_Gail_imput1_prediction$Predition_Gail_imput1, sim_Gail_imput1_prediction$Case_signalYN, label.ordering = NULL)
