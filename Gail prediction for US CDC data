@@ -1,0 +1,162 @@
+# Real data
+
+```{r cars}
+InterventionData<-read.csv("~/Desktop/Intervention Study/All data_2016_copy.csv",header = TRUE,sep = ",")
+head(InterventionData)
+str(InterventionData)
+table(InterventionData$Band)
+
+mean(as.numeric(as.character(InterventionData$B_14_Age)),na.rm = T)
+sd(as.numeric(as.character(InterventionData$B_14_Age)),na.rm = T)
+mean(as.numeric(as.character(InterventionData$B_21_AgeBirth[InterventionData$B_21_AgeBirth!=99])),na.rm = T)
+sd(as.numeric(as.character(InterventionData$B_21_AgeBirth[InterventionData$B_21_AgeBirth!=99])),na.rm = T)
+
+mean(as.numeric(as.character(InterventionData$B_18_AgeMenstrual[InterventionData$B_18_AgeMenstrual!=99])),na.rm = T)
+sd(as.numeric(as.character(InterventionData$B_18_AgeMenstrual[InterventionData$B_18_AgeMenstrual!=99])),na.rm = T)
+mean(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==1])),na.rm = T)
+mean(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==2])),na.rm = T)
+sd(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==1])),na.rm = T)
+sd(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==2])),na.rm = T)
+
+#recode for BRCA risk estimation 
+
+ID<-as.integer(as.character(InterventionData$resp_id))
+T1<-as.numeric(as.character(InterventionData$B_14_Age))
+
+table(InterventionData$B_14_Age)
+table(T1)
+T2<-90
+table(InterventionData$B_22_NumBiopsy)
+
+N_Biop<-as.numeric(InterventionData$B_22_NumBiopsy)
+table(N_Biop)
+
+mean(N_Biop[InterventionData$Band==1],na.rm = T)
+sd(N_Biop[InterventionData$Band==1],na.rm = T)
+sd(N_Biop[InterventionData$Band==2],na.rm = T)
+mean(N_Biop[InterventionData$Band==2],na.rm = T)
+HypPlas<-as.numeric(InterventionData$B_24_Hyperplasia)
+table(HypPlas[InterventionData$Band==1])
+table(HypPlas[InterventionData$Band==2])
+table(HypPlas)
+table(InterventionData$B_24_Hyperplasia)
+AgeMen<-as.numeric(InterventionData$B_18_AgeMenstrual)
+mean(AgeMen[AgeMen<99][InterventionData$Band==1],na.rm = T)
+mean(AgeMen[AgeMen<99][InterventionData$Band==2],na.rm = T)
+sd(AgeMen[AgeMen<99][InterventionData$Band==1],na.rm = T)
+sd(AgeMen[AgeMen<99][InterventionData$Band==2],na.rm = T)
+table(InterventionData$B_18_AgeMenstrual)
+table(AgeMen)
+
+Age1st<-as.numeric(as.character(InterventionData$B_21_AgeBirth))
+mean(Age1st[Age1st<99][InterventionData$Band==1],na.rm = T)
+mean(Age1st[Age1st<99][InterventionData$Band==2],na.rm = T)
+sd(Age1st[Age1st<99][InterventionData$Band==1],na.rm = T)
+sd(Age1st[Age1st<99][InterventionData$Band==2],na.rm = T)
+table(InterventionData$B_21_AgeBirth)
+table(Age1st)
+
+N_Rels<-as.numeric(as.character(InterventionData$B_49_FamHXBreastNum))
+table(N_Rels)
+table(InterventionData$B_49_FamHXBreastNum)
+mean(N_Rels[InterventionData$Band==1],na.rm = T)
+mean(N_Rels[InterventionData$Band==2],na.rm = T)
+
+sd(N_Rels[InterventionData$Band==1],na.rm = T)
+sd(N_Rels[InterventionData$Band==2],na.rm = T)
+
+mean(N_Rels,na.rm = T)
+
+sd(N_Rels,na.rm = T)
+
+DCIS<-as.numeric(as.character(InterventionData$B_24_DCIS))
+table(DCIS[InterventionData$Band==1])
+table(DCIS[InterventionData$Band==2])
+
+LCIS<-as.numeric(as.character(InterventionData$B_24_LCIS))
+table(LCIS[InterventionData$Band==1])
+table(LCIS[InterventionData$Band==2])
+
+table(InterventionData$B_24_DCISAge)
+table(InterventionData$B_24_OvarianAge)
+
+Race<-as.factor(InterventionData$Race_BlackOther)
+colnames(InterventionData)
+table(InterventionData$B_15_Ethnicity)
+table(Race)
+table(InterventionData$Race_BlackOther)
+
+table(InterventionData$B_17_Ashkenazi)
+table(InterventionData$B_21_AgeBirth)
+table(InterventionData$B_17_Ashkenazi)
+table(Race[InterventionData$Band==1])
+table(Race[InterventionData$Band==2])
+Case_YN<-ifelse(InterventionData$Band==1,1,0) # 1 YBCS 2 Relative
+Recode_intervention <- cbind(ID,T1,T2,N_Biop,HypPlas,AgeMen,Age1st,N_Rels,Race,Case_YN)
+Recode_intervention <- as.data.frame(Recode_intervention)
+str(Recode_intervention)
+
+table(T1)
+table(Recode_intervention$Case_YN)
+table(Recode_intervention$AgeMen)
+table(Recode_intervention$Age1st)
+#Case_YN
+#  0   1 
+# 431 859
+# 293+850
+
+Recode_intervention$HypPlas<-ifelse(Recode_intervention$N_Biop==0,99,Recode_intervention$HypPlas)
+
+
+
+# remove the age >35
+Recode_intervention<-Recode_intervention[Recode_intervention$T1>=35,]
+Recode_intervention<-subset(Recode_intervention,!is.na(Recode_intervention$ID))
+table(Recode_intervention$Case_YN*Recode_intervention$T1)
+Abrisk_Intervention<-risk.summary(Recode_intervention)
+Abrisk_Intervention<-as.data.frame(Abrisk_Intervention)
+str(Abrisk_Intervention)
+Abrisk_Intervention$AbsRisk<-as.numeric(as.character(Abrisk_Intervention$AbsRisk))
+cutoff<-cbind(rank(Abrisk_Intervention$AbsRisk),Abrisk_Intervention$AbsRisk)
+
+Abrisk_Intervention$AbsRisk
+Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<90,7,Abrisk_Intervention$AGEcata)
+Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<70,6,Abrisk_Intervention$AGEcata)
+Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<60,5,Abrisk_Intervention$AGEcata)
+Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<50,4,Abrisk_Intervention$AGEcata)
+Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<40,3,Abrisk_Intervention$AGEcata)
+table(as.numeric(as.character(Abrisk_Intervention$T1)))
+table(Abrisk_Intervention$AGEcata)
+Abrisk_Intervention$riskcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$AbsRisk))<20,0,1)
+table(Abrisk_Intervention$AbsRisk)
+table(Abrisk_Intervention$riskcata)
+table(Abrisk_Intervention$AGEcata,Abrisk_Intervention$riskcata)
+
+table(Recode_intervention$T1)
+
+detach("package:caret", unload=TRUE)
+#1nd cut off
+Predition_Gail_Real <- ifelse(Abrisk_Intervention$AbsRisk<9.8, 0, 1)
+table(Predition_Gail_Real)
+Gail_real_prediction<-cbind(Recode_intervention,Predition_Gail_Real)
+
+Gail_real_prediction<-subset(Gail_real_prediction,!is.na(Gail_real_prediction$ID))
+length(Gail_real_prediction$Predition_Gail_Real)
+Gail_real_AUC = confusionMatrix(Gail_real_prediction$Case_YN, Gail_real_prediction$Predition_Gail_Real, negative=0)
+
+#2nd cut off
+Predition_Gail_Real2 <- ifelse(Abrisk_Intervention$AbsRisk<20, 0, 1)
+table(Predition_Gail_Real2)
+Gail_real_prediction2<-cbind(Recode_intervention,Predition_Gail_Real2)
+
+Gail_real_prediction2<-subset(Gail_real_prediction2,!is.na(Gail_real_prediction2$ID))
+length(Gail_real_prediction2$Predition_Gail_Real2)
+Gail_real_AUC2 = confusionMatrix(Gail_real_prediction2$Case_YN, Gail_real_prediction2$Predition_Gail_Real2, negative=0)
+# FP  TP  TN  FN 
+
+
+# FP  TP  TN  FN 
+#272 578  21 272 
+diagnosticErrors(Gail_real_AUC)
+#acc       sens       spec        ppv        npv        lor 
+#0.52405949  0.68000000  0.07167235  0.68000000  0.07167235 -1.80750783 
