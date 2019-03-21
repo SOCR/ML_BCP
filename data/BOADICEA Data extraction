@@ -1,0 +1,207 @@
+---
+title: "Data Geneva"
+author: "Chang"
+date: "8/7/2017"
+output:
+  word_document: default
+  keep_md: yes
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r cars}
+# loop over all files
+#save the folder to your desktop and use the following code chunk
+cname <- file.path("~", "Desktop", "Family")   
+cname
+
+dir(cname)
+
+
+#Load the R package for text mining and then load your texts into R
+library(tm)
+
+docs <- VCorpus(DirSource(cname,encoding = "UTF-8"),readerControl= list(language = "fr"))
+summary(docs) 
+
+
+# inspect the document to identify the words on either side of the string
+
+library(gdata)
+
+toSpace <- content_transformer(function(x, pattern) {return (gsub(pattern, " ", x))})
+
+#docs <- tm_map(docs, toSpace, " -")
+#docs <- tm_map(docs, toSpace, ":")
+#Remove punctuation  replace punctuation marks with 
+#docs <- tm_map(docs, removePunctuation)
+#docs <- tm_map(docs, toSpace, "'")
+ 
+
+#Transform to lower case (need to wrap in content_transformer)
+docs <- tm_map(docs,content_transformer(tolower))
+
+docs <- tm_map(docs, stripWhitespace)
+
+docs <- tm_map(docs, PlainTextDocument)
+DocsCopy <- docs
+
+
+```
+
+```{r}
+#loop
+
+for (i in 1:2645){
+  txt1<- paste0(as.character(docs[[i]]), collapse = ",")
+  
+  
+extract1 <- regmatches(txt1, gregexpr("(?<=famille).*?(?=compte-rendu de premiere)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "familleID") <- trim(gsub("[[:punct:]]", "", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=d???oncogenetique du).*?(?= n?)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "NameFS") <- trim(gsub("[[:punct:]]", "", extract1))
+
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=poids/taille).*?(?=allergies)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "BMI") <- trim(gsub("[[:punct:]]", "", extract1))
+ 
+extract1 <- regmatches(txt1, gregexpr("(?<=allergies).*?(?=m?dicaments)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "allergies") <- trim(gsub("[[:punct:]]", "", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=m?dicaments).*?(?=oh)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "m?dicaments") <- trim(gsub("[[:punct:]]", "", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=oh).*?(?=tabac)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "oh") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=tabac).*?(?=activit?s sportives)", txt1, perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "tabac") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=activit?s sportives).*?(?=exposition environnementale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "activit?s sportives") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=exposition environnementale).*?(?=exposition solaire)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "exposition environnementale") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=exposition solaire).*?(?=mesures pr?ventives)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "exposition solaire") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=alimentation).*?(?=examens endoscopiques)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "alimentation") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=examens endoscopiques).*?(?=anamn?se gyn?cologique)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "examens endoscopiques") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=m??narche).*?(?=grossesse)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "m??narche") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=grossesse).*?(?=accouchement)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "grossesse") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=accouchement).*?(?=allaitement)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "accouchement") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=allaitement).*?(?=contraception orale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "allaitement") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=contraception orale).*?(?=m?nopause)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "contraception orale") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=m?nopause).*?(?=substitution hormonale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "m?nopause") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=substitution hormonale).*?(?=examen gyn??cologique)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "substitution hormonale") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=examen gyn??cologique).*?(?=surveillance des seins)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "examen gyn??cologique") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=surveillance des seins).*?(?=surveillance des ovaires)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "surveillance des seins") <- trim(gsub("[[:punct:]]","", extract1))
+
+
+extract1 <- regmatches(txt1, gregexpr("(?<=surveillance des ovaires).*?(?=anamn?se sociale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "surveillance des ovaires") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=branche maternelle).*?(?=anamn?se familiale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "branche maternelle") <- trim(gsub("[[:punct:]]","", extract1))
+
+extract1 <- regmatches(txt1, gregexpr("(?<=branche paternelle).*?(?=anamn?se familiale)", txt1,  perl=TRUE))
+meta(docs[[i]], type = "corpus", tag = "branche paternelle") <- trim(gsub("[[:punct:]]","", extract1))
+}
+
+writeLines(as.character(docs[[1890]]))
+
+# inspect
+meta(docs[[1789]], type = "corpus")
+```
+
+
+```{r}
+
+datalist = list()
+
+for (i in 1:2645) {
+   
+    dat <- data.frame(matrix(unlist(meta(docs[[i]])), nrow=1, byrow=T),stringsAsFactors=FALSE)
+     colnames(dat)<-c("a1","a2","a3","a4","a5","a6","a7","a8","a9","FamilyID","NameFS","BMI","allergies","m?dicaments","oh","tabac","sportives","exposition_environnementale","exposition_solaire","alimentation","examens_endoscopiques","m?narche","grossesse","accouchement","allaitement","contraception_orale","m?nopause","hormonale","examen_gyn?cologique","surveillance_des_seins","surveillance_des_ovaires","maternelle","paternelle")
+    datalist[[i]] <- dat # add it to your list
+}
+
+big_data = do.call(rbind, datalist)
+
+meta(docs[[1]], type = "corpus")
+
+
+
+```
+
+```{r}
+
+#clearning
+
+FirstC<-big_data[,10:33]
+FirstC[FirstC=="character0"]<-NA
+FirstC$NameFS<-gsub('[[:digit:]]+', '', FirstC$NameFS)
+
+FirstC<-subset(FirstC, !is.na(NameFS) | !is.na(FamilyID))
+
+
+
+
+FirstC$Rename<-gsub(".*mme","",FirstC$NameFS)
+FirstC$Rename<-gsub(".*madame","",FirstC$Rename)
+FirstC$Rename<-gsub(".*monsieur","",FirstC$Rename)
+FirstC$Rename<-gsub(".* m ","",FirstC$Rename)
+FirstC$Rename<-gsub(".*mlle","",FirstC$Rename)
+FirstC$Rename<-gsub("\\.*adress?","",FirstC$Rename)
+
+
+FirstC$maternelle<-gsub("\\.*branche","",FirstC$maternelle)
+FirstC$maternelle<-gsub("\\.*paternelle","",FirstC$maternelle)
+
+
+write.csv(FirstC, "~/Desktop/progeny/mydata.csv", sep="/t",fileEncoding = "LATIN1") 
+
+```
+
+
+
