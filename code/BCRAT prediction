@@ -1,0 +1,41 @@
+#Gail absolut risk 
+library("BCRA", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+#Simulated Gail no signal
+Abrisk_Random<-risk.summary(sim_Gail_Random)
+Abrisk_Random<-as.data.frame(Abrisk_Random)
+str(Abrisk_Random)
+Abrisk_Random$AbsRisk<-as.numeric(as.character(Abrisk_Random$AbsRisk))
+mean(Abrisk_Random$AbsRisk)
+Predition_Gail_Random <- ifelse(Abrisk_Random$AbsRisk<median(Abrisk_Random$AbsRisk), 0, 1)
+table(Predition_Gail_Random)
+sim_Gail_Random_prediction<-cbind(sim_Gail_Random,Predition_Gail_Random)
+
+#Simulated Gail atifical signal
+Abrisk_signal<-risk.summary(sim_Gail_signal)
+Abrisk_signal<-as.data.frame(Abrisk_signal)
+str(Abrisk_signal)
+Abrisk_signal$AbsRisk<-as.numeric(as.character(Abrisk_signal$AbsRisk))
+Predition_Gail_signal <- ifelse(Abrisk_signal$AbsRisk<median(Abrisk_signal$AbsRisk), 0, 1)
+table(Predition_Gail_signal)
+sim_Gail_signal_prediction<-cbind(sim_Gail_signal,Predition_Gail_signal)
+
+#Calculate AUC 
+library("crossval")
+sim_GRan_AUC = crossval::confusionMatrix(sim_Gail_Random_prediction$Case_Random, sim_Gail_Random_prediction$Predition_Gail_Random, negative=0)
+
+# FP  TP  TN  FN 
+#305 301 312 282
+sim_GSig_AUC = confusionMatrix(sim_Gail_signal_prediction$Case_signalYN, sim_Gail_signal_prediction$Predition_Gail_signal, negative=0)
+# FP  TP  TN  FN 
+#361 245 306 288 
+diagnosticErrors(sim_GRan_AUC)
+#       acc       sens       spec        ppv        npv        lor 
+#0.51083333 0.51629503 0.50567261 0.49669967 0.52525253 0.08789461
+diagnosticErrors(sim_GSig_AUC)
+#       acc       sens       spec        ppv        npv        lor 
+#0.4591667  0.4596623  0.4587706  0.4042904  0.5151515 -0.3269951
+
+library(cvAUC)
+
+AUC(sim_Gail_Random_prediction$Predition_Gail_Random, sim_Gail_Random_prediction$Case_Random, label.ordering = NULL)
+AUC(sim_Gail_signal_prediction$Predition_Gail_signal, sim_Gail_signal_prediction$Case_signalYN, label.ordering = NULL)
