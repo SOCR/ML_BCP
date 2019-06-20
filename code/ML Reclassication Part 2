@@ -1,0 +1,142 @@
+title: "Risk reclassification part 2, in progress"
+author: "Chang"
+date: "4/15/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r cars}
+#Read data
+table(all$Cancer.Diagnosis.1)
+all$breastcancer1_Chang<-all$Cancer.Diagnosis.1
+
+table
+
+all$breastcancer1_Chang<-as.character(all$breastcancer1_Chang)
+all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem Left"]<-"BreastCancer"
+all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem Right"]<-"BreastCancer"
+all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - in situ"]<-"BreastCancer"
+all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Male"]<-"BreastCancer"
+
+all$breastcancer1_Chang<-ifelse(all$breastcancer1_Chang=="BreastCancer",1,0)
+table(all$breastcancer1_Chang)
+
+table(all$Cancer.Diagnosis.2)
+
+all$breastcancer2_Chang<-all$Cancer.Diagnosis.2
+all$breastcancer2_Chang<-as.character(all$breastcancer2_Chang)
+all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem Left"]<-"BreastCancer"
+all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem Right"]<-"BreastCancer"
+all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - in situ"]<-"BreastCancer"
+all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Male"]<-"BreastCancer"
+
+all$breastcancer2_Chang<-ifelse(all$breastcancer2_Chang=="BreastCancer",1,0)
+table(all$breastcancer2_Chang)
+table(all$breastcancer1_Chang,all$breastcancer2_Chang)
+
+all$breastcancer3_Chang<-all$Cancer.Diagnosis.3
+all$breastcancer3_Chang<-as.character(all$breastcancer3_Chang)
+all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem Left"]<-"BreastCancer"
+all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem Right"]<-"BreastCancer"
+all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - in situ"]<-"BreastCancer"
+all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Male"]<-"BreastCancer"
+all$breastcancer3_Chang<-ifelse(all$breastcancer3_Chang=="BreastCancer",1,0)
+table(all$breastcancer3_Chang)
+
+
+all$breastcancer4_Chang<-all$Cancer.Diagnosis.4
+all$breastcancer4_Chang<-as.character(all$breastcancer4_Chang)
+all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem Left"]<-"BreastCancer"
+all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem Right"]<-"BreastCancer"
+all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - in situ"]<-"BreastCancer"
+all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Male"]<-"BreastCancer"
+all$breastcancer4_Chang<-ifelse(all$breastcancer4_Chang=="BreastCancer",1,0)
+table(all$breastcancer4_Chang)
+
+all$breastcancer_ChangTotal<-all$breastcancer1_Chang+all$breastcancer2_Chang+all$breastcancer3_Chang+all$breastcancer4_Chang
+
+table(all$breastcancer_ChangTotal)
+
+table(all$Sex,all$breastcancer_ChangTotal)
+
+#Excluding those having sex as Unknow
+
+all$sex<-as.character(all$Sex)
+
+allexU<-subset(all,all$Sex!="U")
+
+table(allexU$Sex)
+table(allexU$breastcancer_ChangTotal)
+
+allexUexYO<-subset(allexU,allexU$Year.of.Birth<1999)
+allexUexYO<-subset(allexUexYO,allexUexYO$Year.of.Birth>1939)
+table(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0]) 
+length(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0]) 
+table(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1]) 
+length(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1]) 
+
+# !!!SIZE * 1.5
+
+
+# 1920 2014
+
+sum(table(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0&allexUexYO$sex=="F"]))
+mean(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+mean(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+median(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+median(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+sd(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+sd(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+
+table(allexUexYO$Sex[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Sex[allexUexYO$breastcancer_ChangTotal>=1])
+
+table(allexUexYO$Age.at.Menopause[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Age.at.Menopause[allexUexYO$breastcancer_ChangTotal>=1])
+
+
+
+table(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1])
+mean(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0],na.rm = T)
+mean(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1],na.rm = T)
+sd(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0],na.rm = T)
+sd(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1],na.rm = T)
+
+table(allexUexYO$Cancer.Diagnosis.1[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Cancer.Diagnosis.1[allexUexYO$breastcancer_ChangTotal>=1])
+
+table(allexUexYO$Cancer.Diagnosis.2[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Cancer.Diagnosis.2[allexUexYO$breastcancer_ChangTotal>=1])
+
+table(allexUexYO$Cancer.Diagnosis.3[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Cancer.Diagnosis.3[allexUexYO$breastcancer_ChangTotal>=1])
+
+table(allexUexYO$Family.Ancestry...Maternal.Grandfather[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Family.Ancestry...Maternal.Grandfather[allexUexYO$breastcancer_ChangTotal>=1])
+
+table(allexUexYO$Family.Ancestry...Paternal.Grandmother[allexUexYO$breastcancer_ChangTotal==0])
+table(allexUexYO$Family.Ancestry...Paternal.Grandmother[allexUexYO$breastcancer_ChangTotal>=1])
+
+sum(table(allexUexYO$dcis[allexUexYO$breastcancer_ChangTotal==0]))
+sum(table(allexUexYO$BRCAR??sultat[allexUexYO$breastcancer_ChangTotal>=1]))
+
+table(all$Cancer.Diagnosis.1[all$Cancer.Diagnosis.1=="Breast - in situ"])
+table(all$Cancer.Diagnosis.2[all$Cancer.Diagnosis.2=="Breast - in situ"])
+table(all$Cancer.Diagnosis.3[all$Cancer.Diagnosis.3=="Breast - in situ"])
+table(all$Cancer.Diagnosis.4[all$Cancer.Diagnosis.4=="Breast - in situ"])
+
+table(all$Cancer.Diagnosis.1.ICD9.Code)
+table(all$Cancer.Diagnosis.2)
+table(all$Cancer.Diagnosis.3)
+table(all$Cancer.Diagnosis.4)
