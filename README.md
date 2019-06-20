@@ -50,6 +50,8 @@ Contact
 
 References
 ==========
+**Ming, C, Viassolo, V, Probst-Hensch, N, Chappuis, PO, Dinov, ID, and Katapodi, MC. (2019) [Machine learning techniques for personalized breast cancer risk prediction: comparison with the BCRAT and BOADICEA models](https://doi.org/10.1186/s13058-019-1158-4), Breast Cancer Research 21(1):75, DOI [10.1186/s13058-019-1158-4](https://doi.org/10.1186/s13058-019-1158-4).**
+
 1.	Nelson HD, Tyne K, Naik A, Bougatsos C, Chan BK, Humphrey L. Screening for breast cancer: an update for the U.S. Preventive Services Task Force. Annals of internal medicine. 2009;151(10):727-37, w237-42.
 2.	Arie S. Switzerland debates dismantling its breast cancer screening programme. BMJ : British Medical Journal. 2014;348.
 3.	Christine Bouchardy PP, Matthias Lorez, Kerri Clough-Gorr, Andrea Bordoni and the NICER Working Group. Trends in Breast Cancer 
@@ -103,7 +105,3 @@ Survival in Switzerland. NICER. 2011;Schweizer Krebsbulletin(Nr. 4/2011).
 50.	Ng AY. Preventing "Overfitting" of Cross-Validation Data.  Proceedings of the Fourteenth International Conference on Machine Learning. 657119: Morgan Kaufmann Publishers Inc.; 1997. p. 245-53.
 51.	Strimme K. Package ‘crossval’. 2015. p. Contains generic functions for performing cross validation and for computing diagnostic errors.
 52.	Hickey KT, Katapodi MC, Coleman B, Reuter‐Rice K, Starkweather AR. Improving Utilization of the Family History in the Electronic Health Record. Journal of Nursing Scholarship. 2017;49(1):80-6.
-
-
-
-
