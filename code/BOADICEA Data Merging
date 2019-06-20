@@ -1,0 +1,72 @@
+title: "Geneva data progeny"
+author: "Chang"
+date: "8/23/2017"
+output: word_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## R Markdown
+
+```{r cars}
+### date here is 20## MM DD, incomplete Merge Suivi-analysis
+library(xlsx)
+gc()
+options(java.parameters = "-Xmx8000m")
+
+
+BACA<-read.xlsx("suivi_analyses.xlsm",sheetName = "BRCA1-2",colIndex = 1:10 , header = T,endRow= 1479,encoding = "Latin-1",colClasses=c(NA,NA,NA,"Date","Date",NA,NA,"Date",NA,NA))
+
+MSI_IHC<-read.xlsx("suivi_analyses.xlsm",sheetName = "MSI-IHC",colIndex = 1:10 ,endRow= 180, header = T,encoding = "Latin-1",colClasses=c(NA,NA,NA,"Date","Date",NA,NA,"Date",NA,NA))
+
+Lynch_APC_MYH<-read.xlsx("suivi_analyses.xlsm",sheetName = "Lynch-APC-MYH",colIndex = 1:11 ,endRow= 281, header = T,encoding = "Latin-1",colClasses=c(NA,NA,NA,"Date","Date",NA,NA,NA,"Date",NA,NA))
+
+Panel<-read.xlsx("suivi_analyses.xlsm",sheetName = "Panel",colIndex = 1:8 ,endRow= 38, header = T,encoding="Latin-1",colClasses=c(NA,NA,NA,"Date","Date",NA,NA,"Date"))
+
+
+Autres<-read.xlsx("suivi_analyses.xlsm",sheetName = "Autres",colIndex = 1:10 ,endRow= 159, header = T,encoding = "Latin-1",colClasses=c(NA,NA,NA,"Date","Date",NA,NA,"Date",NA,NA))
+
+#Colour unknow meaning red:En cours depuis > 6 mois		yellow:En cours depuis < 6 mois		blue RDV fix??		golden ICHV/BS		
+
+
+getest<-merge(BACA,Lynch_APC_MYH, by=c("X.Famille","Pr??nom","Nom"), all = T )
+getest<-merge(getest,Panel, by=c("X.Famille","Pr??nom","Nom"), all = T )
+getest<-merge(getest,MSI_IHC, by=c("X.Famille","Pr??nom","Nom"), all = T )
+getest<-merge(getest,Autres, by=c("X.Famille","Pr??nom","Nom"), all = T )
+
+
+#replacing exisiting values
+getest$FamilyID<-as.character(getest$X.Famille) 
+getest$FamilyID<-gsub("[^0-9\\/]", "", getest$FamilyID)
+
+getest$FamilyID[getest$FamilyID=="2416001"] <- "2416/001"
+getest$FamilyID[getest$FamilyID=="603/??"] <- "603/"
+getest$FamilyID[getest$FamilyID=="2363-001"] <- "2363/001"
+getest$FamilyID[getest$FamilyID=="33346/001"] <- "3346/001"
+getest$FamilyID[getest$FamilyID=="993/?"] <- "993/"
+getest$FamilyID[getest$FamilyID=="904001"] <- "904/001"
+getest$FamilyID[getest$FamilyID=="2370001"] <- "2370/001"
+getest$FamilyID[getest$FamilyID=="2363001"] <- "2363/001"
+getest$FamilyID[getest$FamilyID=="2483/0"] <- "2483/"
+getest$FamilyID[getest$FamilyID=="17867001"] <- "1786/001"
+
+
+
+foo <- data.frame(do.call('rbind', strsplit(as.character(getest$FamilyID),'/',fixed=TRUE)))
+
+getest$FamilyID<-foo$X1
+getest$UPN<-foo$X2
+
+getest$UPN<-gsub("^0+([1-9])","\\1",getest$UPN)
+
+
+getest$ForeName<-getest$Pr??nom
+getest$SurName<-getest$Nom
+getest$SurName = toupper(getest$SurName)
+
+getest$UPN<- ifelse(getest$UPN==getest$FamilyID,1,getest$UPN)
+#getest$Nom<- ifelse(is.na(getest$Nom), paste(getest$Nom.x), as.character(getest$Nom))
+
+#write.csv(getest,"getest.csv")
