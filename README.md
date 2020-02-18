@@ -23,7 +23,7 @@ Overview
 
 * *Methods*: Eight simulated datasets and two retrospective samples were used to compare the performance of the proposed ML methods against state-of-the-art BCRAT and BOADICEA models.
 
-* *Results* : Predictive accuracy reached 88.28% (AU-ROC curve) using ML-Adaptive Boosting, 88.89% using ML-Random Forest, 62.40% for BCRAT, and 59.31% for BOADICEA.
+* *Results* : Predictive accuracy (AU-ROC curve) reached 88.28% using ML-Adaptive Boosting and 88.89% using ML-random forest versus 62.40% with BCRAT for the U.S. population-based sample. Predictive accuracy reached 90.17% using ML-adaptive boosting and 89.32% using ML-Markov chain Monte Carlo generalized linear mixed model versus 59.31% with BOADICEA for the Swiss clinic-based sample.
 
 * *Conclusions*: The significant prediction improvement of the accuracy of classification of women with and without breast cancer achieved with ML algorithms is important in personalized medicine and may suggest prevention strategies and individualized clinical management.
 
