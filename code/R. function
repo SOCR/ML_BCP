@@ -1,4 +1,9 @@
 
+The *.R function must first be downloaded from GitHub, 
+the sources into the R-environment as indicated here: 
+https://www.earthdatascience.org/courses/earth-analytics/multispectral-remote-sensing-data/source-function-in-R/. 
+This will allow users access to all functions within the software and the ability to run their own data through the protocol
+
 Classfication BreastCancer <- function() {
   
   #'#' Real data
