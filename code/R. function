@@ -1,0 +1,1033 @@
+
+Classfication BreastCancer <- function() {
+  
+  #'#' Real data
+  
+  ```{r cars}
+  InterventionData<-read.csv("~/Desktop/Intervention Study/All data_2016_copy.csv",header = TRUE,sep = ",")
+  head(InterventionData)
+  str(InterventionData)
+  table(InterventionData$Band)
+  
+  mean(as.numeric(as.character(InterventionData$B_14_Age)),na.rm = T)
+  sd(as.numeric(as.character(InterventionData$B_14_Age)),na.rm = T)
+  mean(as.numeric(as.character(InterventionData$B_21_AgeBirth[InterventionData$B_21_AgeBirth!=99])),na.rm = T)
+  sd(as.numeric(as.character(InterventionData$B_21_AgeBirth[InterventionData$B_21_AgeBirth!=99])),na.rm = T)
+  
+  mean(as.numeric(as.character(InterventionData$B_18_AgeMenstrual[InterventionData$B_18_AgeMenstrual!=99])),na.rm = T)
+  sd(as.numeric(as.character(InterventionData$B_18_AgeMenstrual[InterventionData$B_18_AgeMenstrual!=99])),na.rm = T)
+  mean(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==1])),na.rm = T)
+  mean(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==2])),na.rm = T)
+  sd(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==1])),na.rm = T)
+  sd(as.numeric(as.character(InterventionData$B_14_Age[InterventionData$Band==2])),na.rm = T)
+  
+  
+  #'cacner surveillence 
+  
+  table(InterventionData$rb_81_FreqMamm)
+  table(InterventionData$rb_81_FreqMamm)
+  
+  InterventionData$B_14_Age<-as.numeric(as.character(InterventionData$B_14_Age))
+  InterventionData<-InterventionData[InterventionData$B_14_Age>=35,]
+  InterventionData<-subset(InterventionData,!is.na(InterventionData$resp_id))
+  
+  mean(InterventionData$B_14_Age[InterventionData$Band==2])
+  sd(InterventionData$B_14_Age[InterventionData$Band==2])
+  
+  table(InterventionData$B_18_AgeMenstrual[InterventionData$Band==2&InterventionData$B_18_AgeMenstrual!=99])
+  mean(InterventionData$B_18_AgeMenstrual[InterventionData$Band==2&InterventionData$B_18_AgeMenstrual!=99])
+  sd(InterventionData$B_18_AgeMenstrual[InterventionData$Band==2&InterventionData$B_18_AgeMenstrual!=99])
+  
+  
+  table(InterventionData$B_22_NumBiopsy[InterventionData$Band==2&InterventionData$B_22_NumBiopsy!=99])
+  mean(InterventionData$B_22_NumBiopsy[InterventionData$Band==2&InterventionData$B_22_NumBiopsy!=99])
+  sd(InterventionData$B_22_NumBiopsy[InterventionData$Band==2&InterventionData$B_22_NumBiopsy!=99])
+  
+  table(InterventionData$B_24_Hyperplasia[InterventionData$Band==2&InterventionData$B_24_Hyperplasia!=99])
+  mean(InterventionData$B_24_Hyperplasia[InterventionData$Band==2&InterventionData$B_24_Hyperplasia!=99])
+  sd(InterventionData$B_24_Hyperplasia[InterventionData$Band==2&InterventionData$B_24_Hyperplasia!=99])
+  
+  table(InterventionData$B_21_AgeBirth[InterventionData$Band==2&InterventionData$B_21_AgeBirth!=99])
+  mean(InterventionData$B_21_AgeBirth[InterventionData$Band==2&InterventionData$B_21_AgeBirth!=99])
+  sd(InterventionData$B_21_AgeBirth[InterventionData$Band==2&InterventionData$B_21_AgeBirth!=99])
+  
+  
+  table(InterventionData$B_24_OvarianCancer[InterventionData$Band==2&InterventionData$B_24_OvarianCancer!=99])
+  mean(InterventionData$B_24_OvarianCancer[InterventionData$Band==2&InterventionData$B_24_OvarianCancer!=99])
+  sd(InterventionData$B_24_OvarianCancer[InterventionData$Band==2&InterventionData$B_24_OvarianCancer!=99])
+  
+  
+  table(InterventionData$rRace_BlackOther [InterventionData$Band==2])
+  mean(InterventionData$rRace_BlackOther [InterventionData$Band==2])
+  sd(InterventionData$rRace_BlackOther [InterventionData$Band==2])
+  
+  
+  table(InterventionData$B_17_Ashkenazi [InterventionData$Band==2])
+  mean(InterventionData$B_17_Ashkenazi [InterventionData$Band==2])
+  sd(InterventionData$B_17_Ashkenazi [InterventionData$Band==2])
+  
+  
+  
+  table(InterventionData$B_49_FamHXBreastNum [InterventionData$Band==2&InterventionData$B_49_FamHXBreastNum!=0])
+  mean(InterventionData$B_49_FamHXBreastNum [InterventionData$Band==2&InterventionData$B_49_FamHXBreastNum!=0])
+  sd(InterventionData$B_49_FamHXBreastNum [InterventionData$Band==2&InterventionData$B_49_FamHXBreastNum!=0])
+  
+  
+  
+  table(InterventionData$B_118_PositiveBRCA1 [InterventionData$Band==2])
+  mean(InterventionData$B_118_PositiveBRCA1 [InterventionData$Band==2])
+  sd(InterventionData$B_118_PositiveBRCA1 [InterventionData$Band==2])
+  
+  
+  table(InterventionData$B_118_PositiveBRCA2 [InterventionData$Band==2])
+  mean(InterventionData$B_118_PositiveBRCA2 [InterventionData$Band==2])
+  sd(InterventionData$B_118_PositiveBRCA2 [InterventionData$Band==2])
+  
+  
+  #'recode for BRCA risk estimation 
+  
+  ID<-as.integer(as.character(InterventionData$resp_id))
+  T1<-as.numeric(as.character(InterventionData$B_14_Age))
+  
+  table(InterventionData$B_14_Age)
+  table(T1)
+  T2<-90
+  table(InterventionData$B_22_NumBiopsy)
+  
+  N_Biop<-as.numeric(InterventionData$B_22_NumBiopsy)
+  table(N_Biop)
+  
+  mean(N_Biop[InterventionData$Band==1],na.rm = T)
+  sd(N_Biop[InterventionData$Band==1],na.rm = T)
+  sd(N_Biop[InterventionData$Band==2],na.rm = T)
+  mean(N_Biop[InterventionData$Band==2],na.rm = T)
+  HypPlas<-as.numeric(InterventionData$B_24_Hyperplasia)
+  table(HypPlas[InterventionData$Band==1])
+  table(HypPlas[InterventionData$Band==2])
+  table(HypPlas)
+  table(InterventionData$B_24_Hyperplasia)
+  AgeMen<-as.numeric(InterventionData$B_18_AgeMenstrual)
+  mean(AgeMen[AgeMen<99][InterventionData$Band==1],na.rm = T)
+  mean(AgeMen[AgeMen<99][InterventionData$Band==2],na.rm = T)
+  sd(AgeMen[AgeMen<99][InterventionData$Band==1],na.rm = T)
+  sd(AgeMen[AgeMen<99][InterventionData$Band==2],na.rm = T)
+  table(InterventionData$B_18_AgeMenstrual)
+  table(AgeMen)
+  
+  Age1st<-as.numeric(as.character(InterventionData$B_21_AgeBirth))
+  mean(Age1st[Age1st<99][InterventionData$Band==1],na.rm = T)
+  mean(Age1st[Age1st<99][InterventionData$Band==2],na.rm = T)
+  sd(Age1st[Age1st<99][InterventionData$Band==1],na.rm = T)
+  sd(Age1st[Age1st<99][InterventionData$Band==2],na.rm = T)
+  table(InterventionData$B_21_AgeBirth)
+  table(Age1st)
+  
+  N_Rels<-as.numeric(as.character(InterventionData$B_49_FamHXBreastNum))
+  table(N_Rels)
+  table(InterventionData$B_49_FamHXBreastNum)
+  mean(N_Rels[InterventionData$Band==1],na.rm = T)
+  mean(N_Rels[InterventionData$Band==2],na.rm = T)
+  
+  sd(N_Rels[InterventionData$Band==1],na.rm = T)
+  sd(N_Rels[InterventionData$Band==2],na.rm = T)
+  
+  mean(N_Rels,na.rm = T)
+  
+  sd(N_Rels,na.rm = T)
+  
+  DCIS<-as.numeric(as.character(InterventionData$B_24_DCIS))
+  table(DCIS[InterventionData$Band==1])
+  table(DCIS[InterventionData$Band==2])
+  
+  LCIS<-as.numeric(as.character(InterventionData$B_24_LCIS))
+  table(LCIS[InterventionData$Band==1])
+  table(LCIS[InterventionData$Band==2])
+  
+  
+  
+  Race<-as.factor(InterventionData$Race_BlackOther)
+  colnames(InterventionData)
+  table(InterventionData$B_15_Ethnicity)
+  table(Race)
+  table(InterventionData$Race_BlackOther)
+  
+  table(InterventionData$B_17_Ashkenazi)
+  table(InterventionData$B_21_AgeBirth)
+  table(InterventionData$B_17_Ashkenazi)
+  table(Race[InterventionData$Band==1])
+  table(Race[InterventionData$Band==2])
+  Case_YN<-ifelse(InterventionData$Band==1,1,0) #' 1 YBCS 2 Relative
+  Band<-as.factor(InterventionData$Band)
+  Recode_intervention <- cbind(ID,T1,T2,N_Biop,HypPlas,AgeMen,Age1st,N_Rels,Race,Case_YN,Band)
+  Recode_intervention <- as.data.frame(Recode_intervention)
+  str(Recode_intervention)
+  table(T1)
+  table(Recode_intervention$Case_YN)
+  #'Case_YN
+  #'  0   1 
+  #' 431 859
+  #' 293+850
+  
+  Recode_intervention$HypPlas<-ifelse(Recode_intervention$N_Biop==0,99,Recode_intervention$HypPlas)
+  
+  
+  
+  #' remove the age <35
+  Recode_intervention<-Recode_intervention[Recode_intervention$T1>=35,]
+  Recode_intervention<-subset(Recode_intervention,!is.na(Recode_intervention$ID))
+  table(Recode_intervention$Case_YN*Recode_intervention$T1)
+  library(BCRA)
+  Abrisk_Intervention<-risk.summary(Recode_intervention)
+  Abrisk_Intervention<-as.data.frame(Abrisk_Intervention)
+  str(Abrisk_Intervention)
+  
+  Abrisk_Intervention$AbsRisk<-as.numeric(as.character(Abrisk_Intervention$AbsRisk))
+  cutoff<-cbind(rank(Abrisk_Intervention$AbsRisk),Abrisk_Intervention$AbsRisk)
+  
+  
+  Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<90,"70-79",Abrisk_Intervention$AGEcata)
+  Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<70,"60-69",Abrisk_Intervention$AGEcata)
+  Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<60,"50-59",Abrisk_Intervention$AGEcata)
+  Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<50,"40-49",Abrisk_Intervention$AGEcata)
+  Abrisk_Intervention$AGEcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$T1))<40,"30-39",Abrisk_Intervention$AGEcata)
+  table(as.numeric(as.character(Abrisk_Intervention$T1)))
+  table(Abrisk_Intervention$AGEcata)
+  Abrisk_Intervention$riskcata<-ifelse(as.numeric(as.character(Abrisk_Intervention$AbsRisk))<20,0,1)
+  
+  table(Abrisk_Intervention$riskcata)
+  table(Abrisk_Intervention$AGEcata,Abrisk_Intervention$riskcata)
+  
+  Abrisk_Intervention$Band<-Recode_intervention$Band
+  
+  table(Abrisk_Intervention$Band)
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2],Abrisk_Intervention$riskcata[Abrisk_Intervention$Band==2])
+  
+  #' FP  TP  TN  FN 
+  #'272 578  21 272 
+  #'diagnosticErrors(Gail_real_AUC2)
+  #'acc       sens       spec        ppv        npv        lor 
+  #'0.52405949  0.68000000  0.07167235  0.68000000  0.07167235 -1.80750783 
+  ```
+  
+  
+  
+  
+  ```{r cars}
+  
+  #' remove unrelated variables ! 
+  #'Recode_intervention$BrCa <- ifelse(Recode_intervention$Case_YN==0,0,1) 
+  colnames(Recode_intervention)
+  input <- Recode_intervention[ ,-which(names(Recode_intervention) %in% c("Case_YN","ID","T2","Band"))]
+  output <- as.factor(Recode_intervention$Case_YN)
+  c(dim(input), dim(output))
+  
+  #' using Recode_intervention data:
+  X <- as.data.frame(input); Y <- output
+  neg <- "1"   #' "Control" == "1"
+  
+  #'detach("package:caret", unload=TRUE)
+  library("crossval")
+  
+  #' Side note: There is a function name collision for "crossval", the same method is present in 
+  #' the "mlr" (machine Learning in R) package and in the "crossval" package.  
+  #' To specify a function call from a specific package do:  packagename::functionname()
+  
+  my.ada <- function (train.x, train.y, test.x, test.y, negative, formula){
+    ada.fit <- ada(train.x, train.y)
+    predict.y <- predict(ada.fit, test.x)
+    #'count TP, FP, TN, FN, Accuracy, etc.
+    out <- confusionMatrix(test.y, predict.y, negative = negative)
+    #' negative  is the label of a negative "null" sample (default: "control").
+    return (out)
+  }
+  
+  library("ada")
+  cv.out <- crossval::crossval(my.ada, X, Y, K = 5, B = 2, negative = neg)
+  #' the label of a negative "null" sample (default: "control")
+  
+  out <- diagnosticErrors(cv.out$stat) 
+  print(cv.out$stat)
+  #'FP    TP    TN    FN 
+  #'9.5  68.8 161.9  17.2  
+  print(out)
+  #'#'acc      sens      spec       ppv       npv       lor 
+  #'#'0.8827647 0.7201365 0.9388235 0.8022814 0.9068182 3.6760038
+  
+  ?confusionMatrix
+  
+  #' Logistic 
+  X =as.matrix(input)    #' Predictor variables
+  Y =as.matrix(output) 
+  lm.logit <- glm(as.numeric(Y) ~ ., data = as.data.frame(X), family = "binomial")
+  ynew <- predict(lm.logit, as.data.frame(X)); #'plot(ynew)
+  ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1); #' plot(ynew2)
+  
+  predfun.logit = function(train.x, train.y, test.x, test.y, neg)
+  {   lm.logit <- glm(train.y ~ ., data = train.x, family = "binomial")
+  ynew = predict(lm.logit, test.x )
+  #' compute TP, FP, TN, FN
+  ynew2 <- ifelse(exp(ynew)<median(exp(ynew)), 0, 1)
+  out = confusionMatrix(test.y, ynew2, negative=neg)  #' Binary outcome, we can use confusionMatrix
+  return( out )
+  }
+  
+  cv.out.logit = crossval::crossval(predfun.logit, as.data.frame(X), as.numeric(Y), K=5, B=2, neg="1")
+  cv.out.logit$stat.cv
+  print(cv.out.logit$stat)
+  #'FP    TP    TN    FN 
+  #'49.0  79.4 122.4   6.6  
+  diagnosticErrors(cv.out.logit$stat)
+  #'acc      sens      spec       ppv       npv       lor 
+  #'0.7191601 0.9249147 0.6482353 0.4754386 0.9616056 3.1223676 
+  
+  
+  #'KNN qda lda
+  
+  library("class")
+  
+  X <- as.data.frame(input); Y <- output
+  predfun.knn =function(train.x, train.y, test.x, test.y, neg)
+  {
+    require("class")
+    knn.fit =knn(train.x, test.x, cl =train.y, prob=T)  #' knn is already a prediction function!!!
+    #' ynew = predict(knn.fit, test.x)$class           #' no need of another prediction, in this case
+    out.knn =confusionMatrix(test.y, knn.fit, negative=neg)
+    return( out.knn )
+  }   
+  
+  predfun.qda = function(train.x, train.y, test.x, test.y, negative)
+  {
+    require("MASS") #' for lda function
+    qda.fit = qda(train.x, grouping=train.y)
+    ynew = predict(qda.fit,test.x)$class
+    out.qda = confusionMatrix(test.y, ynew, negative=negative)
+    return( out.qda )
+  }  
+  
+  
+  predfun.lda = function(train.x, train.y, test.x, test.y, neg)
+  {
+    require("MASS")
+    lda.fit = lda(train.x, grouping=train.y)
+    ynew = predict(lda.fit, test.x)$class
+    out.lda = confusionMatrix(test.y, ynew, negative=neg)
+    return( out.lda )
+  }
+  
+  
+  predfun.lm =function(train.x, train.y, test.x, test.y)
+  {     lm.fit =lm(train.y ~. , data=train.x)
+  ynew =predict(lm.fit, test.x )
+  #' compute squared error risk (MSE)
+  out =mean( (ynew -test.y)^2)
+  
+  #'out.lda = confusionMatrix(test.y, ynew, negative=neg)
+  #'out =mean( (ynew -test.y)^2)  out = confusionMatrix(test.y, ynew, negative=neg)
+  #' note that, in general, when fitting linear model to continuous outcome variable (Y),
+  #' we can???t use the out<-confusionMatrix(test.y, ynew, negative=negative), as it requires a binary outcome
+  #' this is why we use the MSE as an estimate of the discrepancy between observed & predicted values
+  return(out)
+  }
+  
+  
+  
+  cv.out.lm =crossval::crossval(predfun.lm, as.data.frame(X), as.numeric(Y), K=5, B=20) #'c(cv.out.lm$stat, cv.out.lm$stat.se) 
+  cv.out.lm
+  #'$stat
+  #'0.0997666
+  #'$stat.se
+  #'0.001173287
+  
+  actuals_preds <- data.frame(cbind(actuals=Recode_intervention$Case_YN, predicteds=ynew))
+  correlation_accuracy.lm <- cor(actuals_preds)#'0.6812951
+  
+  cv.out.knn =crossval::crossval(predfun.knn, X, Y, K=5, B=2, neg="1")
+  cv.out.qda = crossval::crossval(predfun.qda, as.data.frame(X), as.factor(Y), K=5, B=2, neg="1")
+  cv.out.lda = crossval::crossval(predfun.lda, X, Y, K=5, B=2, neg="1")
+  
+  
+  
+  
+  
+  print(cv.out.qda$stat)
+  #'  FP   TP   TN   FN 
+  #'43.6  75.0 127.8  11.0
+  
+  print(cv.out.knn$stat)
+  #'  FP   TP   TN   FN 
+  #'26.8  56.9 144.6  29.1 
+  
+  print(cv.out.lda$stat)
+  #'  FP   TP   TN   FN 
+  #'15.8  57.1 155.6  28.9 
+  
+  cv.out.lda$stat.cv
+  
+  
+  diagnosticErrors(cv.out.lda$stat)
+  #'       acc       sens       spec        ppv        npv        lor 
+  #' 0.8692038 0.7815700 0.8994118 0.7281399 0.9227520 3.4655446 
+  diagnosticErrors(cv.out.qda$stat)
+  #'      acc      sens      spec       ppv       npv       lor 
+  #'0.8674541 0.7713311 0.9005882 0.7278583 0.9195195 3.4196201  
+  diagnosticErrors(cv.out.knn$stat)
+  #'       acc       sens       spec        ppv        npv        lor 
+  #'0.8088364 0.6109215 0.8770588 0.6313933 0.8673647 2.4160554 
+  
+  
+  #' random forest
+  library(randomForest)
+  require(randomForest)
+  library(caret)
+  
+  rf_randoms<-Recode_intervention
+  rf_randoms$Case_YN <- as.factor(rf_randoms$Case_YN)
+  rf.mdl <- randomForest(rf_randoms[,1:9], rf_randoms[,"Case_YN"], ntree=100)
+  
+  rf.mdl$votes
+  rf.cv <- rfcv( rf_randoms[,1:9], rf_randoms[,"Case_YN"], cv.fold = 3)
+  #'with(rf.cv, plot(n.var, error.cv, type="b", col="red"))
+  #'rf.cv$error.cv
+  #'confussion.rf<-confusionMatrix(rf.cv$predicted, rf_randoms$Case_YN)
+  #'confussion.rf
+  rf_random_AUC <- rf.mdl$confusion #' (217+799)/(1143)
+  
+  rfgail<-as.data.frame(rf.mdl$votes)
+  Abrisk_Intervention$MLabsrsik<-100*(rfgail$`1`)
+  Abrisk_Intervention$MLcat<-ifelse(rfgail$`1`<0.2,0,1)
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2],Abrisk_Intervention$MLcat[Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$AGEcata,Abrisk_Intervention$riskcata,Abrisk_Intervention$MLcat)
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==3&Abrisk_Intervention$riskcata==0])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==4&Abrisk_Intervention$riskcata==0])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==5&Abrisk_Intervention$riskcata==0])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==6&Abrisk_Intervention$riskcata==0])
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==3&Abrisk_Intervention$riskcata==1])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==4&Abrisk_Intervention$riskcata==1])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==5&Abrisk_Intervention$riskcata==1])
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$AGEcata==6&Abrisk_Intervention$riskcata==1])
+  
+  length(Abrisk_Intervention$MLcat)
+  Abrisk_Intervention$agreement<-ifelse(Abrisk_Intervention$riskcata==Abrisk_Intervention$MLcat,1,0)
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$Band==2],Abrisk_Intervention$agreement[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$Band==2],Abrisk_Intervention$agreement[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$Band==2])
+  
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2],Abrisk_Intervention$riskcata[Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2],Abrisk_Intervention$riskcata[Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2],Abrisk_Intervention$agreement[Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2],Abrisk_Intervention$agreement[Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$riskcata==1],Abrisk_Intervention$agreement[Abrisk_Intervention$riskcata==1])
+  
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==0],Abrisk_Intervention$agreement[Abrisk_Intervention$MLcat==0])
+  table(Abrisk_Intervention$AGEcata[Abrisk_Intervention$MLcat==1],Abrisk_Intervention$agreement[Abrisk_Intervention$MLcat==1])
+  
+  
+  #'Cancer surveillence 
+  #'Mamm
+  #'0 Do not have mammograms
+  #'1 It has been more than a year
+  #'2 Every year
+  #'3 Every 6 months
+  #'4 Every 3-4 months
+  #'MRI
+  #'1 Every 3-4 months (3-4 times a year)
+  #'2 Every 6 months (2 times a year)
+  #'3 Every 12 months (once a year)
+  #'4 It has been more than 12 months since I last did a breast self-exam
+  #'CBE
+  #'0 Never
+  #'1 More than a year
+  #'2 Every year
+  #'3 Every 6 months
+  #'4 Every 3-4 months
+  
+  
+  
+  Abrisk_Intervention$rb_81_FreqMamm<-InterventionData$rb_81_FreqMamm
+  Abrisk_Intervention$B_82_FreqMRI<-InterventionData$B_82_FreqMRI
+  Abrisk_Intervention$rb_80_FreqCBE<-InterventionData$rb_80_FreqCBE
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_81_FreqMamm[Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$Band==2],Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_81_FreqMamm[Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==0],Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==0],Abrisk_Intervention$rb_81_FreqMamm[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==0])
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==1],Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==1],Abrisk_Intervention$rb_81_FreqMamm[Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==1])
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_81_FreqMamm[Abrisk_Intervention$Band==2],Abrisk_Intervention$AGEcata[Abrisk_Intervention$Band==2])
+  
+  
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2],Abrisk_Intervention$B_82_FreqMRI[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==1])
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2],Abrisk_Intervention$B_82_FreqMRI[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$Band==2&Abrisk_Intervention$MLcat==0])
+  
+  table(Abrisk_Intervention$MLcat[Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_80_FreqCBE[Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_80_FreqCBE[Abrisk_Intervention$Band==2])
+  
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_80_FreqCBE[Abrisk_Intervention$riskcata==0&Abrisk_Intervention$MLcat==1&Abrisk_Intervention$Band==2])
+  table(Abrisk_Intervention$riskcata[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2],Abrisk_Intervention$rb_80_FreqCBE[Abrisk_Intervention$riskcata==1&Abrisk_Intervention$MLcat==0&Abrisk_Intervention$Band==2])
+  
+  #'write.csv(Abrisk_Intervention,"relass.csv")
+  
+  
+  #'by age plot 
+  
+  
+  library(ggplot2)
+  
+  ML_Randomforest<-c(0:100)
+  BCRAT<-c(0:100)
+  AgeCategories<-Abrisk_Intervention$AGEcata
+  #'plotReclass<-ggplot(Abrisk_Intervention, aes(ML_Randomforest,BCRAT))+ scale_color_manual(breaks = c("3", "4", "5","6"),
+  #'                        values=c("red", "blue", "green","yellow"))+geom_point(aes(MLabsrsik,AbsRisk,colour=AgeCategories)) +geom_vline(xintercept = 20, #'colour="green") + geom_hline(yintercept = 20, colour="red")
+  
+  Abrisk_Intervention$AGEcata<-as.factor(Abrisk_Intervention$AGEcata)
+  
+  sp<-ggplot(Abrisk_Intervention[Abrisk_Intervention$Band==2,], aes(x=MLabsrsik, y=AbsRisk, color=AGEcata)) + geom_point() + scale_color_manual(breaks = c("30-39", "40-49", "50-59","60-69"),values=c("red", "blue", "green","orange"))+geom_vline(xintercept = 20, colour="green") + geom_hline(yintercept = 20, colour="blue") + scale_colour_discrete(name  ="Age Categories")+ xlab("ML-Random Forest Risk Estimation") +
+    ylab("BCRAT Risk Estimation")+scale_y_continuous(breaks=seq(0,50,5))+scale_x_continuous(breaks=seq(0,100,10)) 
+  
+  sp
+  
+  #'by Nbio plot 
+  
+  ML_Randomforest<-c(0:100)
+  BCRAT<-c(0:100)
+  Abrisk_Intervention$N_Biop<-as.factor(Abrisk_Intervention$N_Biop)
+  Abrisk_Intervention$N_BiopCate<-ifelse(Abrisk_Intervention$N_Biop!=0,"Had biopsies","Had no biopsies")
+  N_BiopCate<-Abrisk_Intervention$N_BiopCate
+  table(N_BiopCate[Abrisk_Intervention$Band==2])
+  
+  sp_N_Biop<-ggplot(Abrisk_Intervention[Abrisk_Intervention$Band==2,], aes(x=MLabsrsik, y=AbsRisk, color=N_BiopCate)) + geom_point() + scale_color_manual(breaks = c("Had biopsies","Had no biopsies"),values=c("red", "blue"))+geom_vline(xintercept = 20, colour="green") + geom_hline(yintercept = 20, colour="blue") + scale_colour_discrete(name  ="Biopsies")+ xlab("ML-Random Forest Risk Estimation") +
+    ylab("BCRAT Risk Estimation")+scale_y_continuous(breaks=seq(0,50,5))+scale_x_continuous(breaks=seq(0,100,10)) 
+  
+  sp_N_Biop
+  
+  #'#'
+  
+  #'by N_Relative plot 
+  
+  ML_Randomforest<-c(0:100)
+  BCRAT<-c(0:100)
+  Abrisk_Intervention$N_Rels<-as.numeric(as.character(Abrisk_Intervention$N_Rels))
+  Abrisk_Intervention$N_Rels<-ifelse(Abrisk_Intervention$N_Rels<1,1,Abrisk_Intervention$N_Rels)
+  Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$N_Rels==1]<-"Having one"
+  Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$N_Rels==2]<-"Having more than one"
+  Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$N_Rels==3]<-"Having more than one"
+  Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$N_Rels==4]<-"Having more than one"
+  Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$N_Rels==5]<-"Having more than one"
+  
+  N_RelsCate<-Abrisk_Intervention$N_RelsCate
+  table(Abrisk_Intervention$N_RelsCate[Abrisk_Intervention$Band==2])
+  
+  sp_N_Re<-ggplot(Abrisk_Intervention[Abrisk_Intervention$Band==2,], aes(x=MLabsrsik, y=AbsRisk, color=N_RelsCate)) + geom_point() + scale_color_manual(breaks = c("Having one","Having more than one"),values=c("red", "blue"))+geom_vline(xintercept = 20, colour="green") + geom_hline(yintercept = 20, colour="blue") + scale_colour_discrete(name  ="Number of relative affected with breast cancer")+ xlab("ML-Random Forest Risk Estimation") +
+    ylab("BCRAT Risk Estimation")+scale_y_continuous(breaks=seq(0,50,5))+scale_x_continuous(breaks=seq(0,100,10)) 
+  
+  sp_N_Re
+  
+  ML_Randomforest<-c(0:100)
+  BCRAT<-c(0:100)
+  Abrisk_Intervention$N_Rels<-as.numeric(as.character(Abrisk_Intervention$N_Rels))
+  Abrisk_Intervention$N_Rels<-ifelse(Abrisk_Intervention$N_Rels<1,1,Abrisk_Intervention$N_Rels)
+  Abrisk_Intervention$N_RelsCate2<-Abrisk_Intervention$N_Rels
+  
+  
+  N_RelsCate2<-Abrisk_Intervention$N_RelsCate2
+  table(Abrisk_Intervention$N_RelsCate2[Abrisk_Intervention$Band==2])
+  
+  Abrisk_Intervention$N_RelsCate2<-as.factor(Abrisk_Intervention$N_RelsCate2)
+  
+  sp_N_Re2<-ggplot(Abrisk_Intervention[Abrisk_Intervention$Band==2,], aes(x=MLabsrsik, y=AbsRisk, color=N_RelsCate2)) + geom_point() + scale_color_manual(breaks = c("1","2","3","4","5"),values=c("red", "blue","green","orange","black"))+geom_vline(xintercept = 20, colour="green") + geom_hline(yintercept = 20, colour="blue") + scale_colour_discrete(name  ="Number of relative affected with breast cancer")+ xlab("ML-Random Forest Risk Estimation") +
+    ylab("BCRAT Risk Estimation")+scale_y_continuous(breaks=seq(0,50,5))+scale_x_continuous(breaks=seq(0,100,10)) 
+  
+  sp_N_Re2
+  
+  #'#' density polt
+  
+  
+  poltML<-as.data.frame(Abrisk_Intervention[Abrisk_Intervention$Band==2,19])
+  colnames(poltML)[1] <- "risk"
+  poltBCRAT<-as.data.frame(Abrisk_Intervention[Abrisk_Intervention$Band==2,14])
+  colnames(poltBCRAT)[1] <- "risk"
+  poltML$Method<-rep("ML-RF",293)
+  poltBCRAT$Method<-rep("BCRAT",293)
+  
+  MLpotden<-rbind(poltML,poltBCRAT)
+  
+  
+  #' Change density plot fill colors by groups
+  #' Use semi-transparent fill
+  p_density<-ggplot(MLpotden, aes(x=risk, fill=Method)) +
+    geom_density(alpha=0.4)+ geom_vline(data=MLpotden, aes(xintercept=20),
+                                        linetype="dashed")
+  
+  p_density
+  
+  
+  #'#'#' Plot ROC
+  
+  kf = KFold(n=len(y), n_folds=10)
+  
+  tprs = []
+  base_fpr = np.linspace(0, 1, 101)
+  
+  plt.figure(figsize=(5, 5))
+  
+  for i, (train, test) in enumerate(kf):
+    model = LogisticRegression().fit(X[train], y[train])
+  y_score = model.predict_proba(X[test])
+  fpr, tpr, _ = roc_curve(y[test], y_score[:, 1])
+  
+  plt.plot(fpr, tpr, 'b', alpha=0.15)
+  tpr = interp(base_fpr, fpr, tpr)
+  tpr[0] = 0.0
+  tprs.append(tpr)
+  
+  tprs = np.array(tprs)
+  mean_tprs = tprs.mean(axis=0)
+  std = tprs.std(axis=0)
+  
+  tprs_upper = np.minimum(mean_tprs + std, 1)
+  tprs_lower = mean_tprs - std
+  
+  
+  plt.plot(base_fpr, mean_tprs, 'b')
+  plt.fill_between(base_fpr, tprs_lower, tprs_upper, color='grey', alpha=0.3)
+  
+  plt.plot([0, 1], [0, 1],'r--')
+  plt.xlim([-0.01, 1.01])
+  plt.ylim([-0.01, 1.01])
+  plt.ylabel('True Positive Rate')
+  plt.xlabel('False Positive Rate')
+  plt.axes().set_aspect('equal', 'datalim')
+  plt.show()
+  
+  idx = np.arange(0, len(y))
+  
+  for j in np.random.randint(0, high=10000, size=10):
+    np.random.shuffle(idx)
+  kf = KFold(n=len(y), n_folds=10, random_state=j)
+  
+  for i, (train, test) in enumerate(kf):
+    model = "your method"().fit(X[idx][train], y[idx][train])
+  y_score = model.predict_proba(X[idx][test])
+  fpr, tpr, _ = roc_curve(y[idx][test], y_score[:, 1])
+  
+  plt.plot(fpr, tpr, 'b', alpha=0.05)
+  tpr = interp(base_fpr, fpr, tpr)
+  tpr[0] = 0.0
+  tprs.append(tpr)
+  ```
+  
+  #'#' classifcation 2
+  
+  
+  ```{r cars}
+  #'Read data
+  table(all$Cancer.Diagnosis.1)
+  all$breastcancer1_Chang<-all$Cancer.Diagnosis.1
+  
+  table
+  
+  all$breastcancer1_Chang<-as.character(all$breastcancer1_Chang)
+  all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem Left"]<-"BreastCancer"
+  all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+  all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Fem Right"]<-"BreastCancer"
+  all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - in situ"]<-"BreastCancer"
+  all$breastcancer1_Chang[all$breastcancer1_Chang=="Breast - Male"]<-"BreastCancer"
+  
+  all$breastcancer1_Chang<-ifelse(all$breastcancer1_Chang=="BreastCancer",1,0)
+  table(all$breastcancer1_Chang)
+  
+  table(all$Cancer.Diagnosis.2)
+  
+  all$breastcancer2_Chang<-all$Cancer.Diagnosis.2
+  all$breastcancer2_Chang<-as.character(all$breastcancer2_Chang)
+  all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem Left"]<-"BreastCancer"
+  all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+  all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Fem Right"]<-"BreastCancer"
+  all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - in situ"]<-"BreastCancer"
+  all$breastcancer2_Chang[all$breastcancer2_Chang=="Breast - Male"]<-"BreastCancer"
+  
+  all$breastcancer2_Chang<-ifelse(all$breastcancer2_Chang=="BreastCancer",1,0)
+  table(all$breastcancer2_Chang)
+  table(all$breastcancer1_Chang,all$breastcancer2_Chang)
+  
+  all$breastcancer3_Chang<-all$Cancer.Diagnosis.3
+  all$breastcancer3_Chang<-as.character(all$breastcancer3_Chang)
+  all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem Left"]<-"BreastCancer"
+  all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+  all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Fem Right"]<-"BreastCancer"
+  all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - in situ"]<-"BreastCancer"
+  all$breastcancer3_Chang[all$breastcancer3_Chang=="Breast - Male"]<-"BreastCancer"
+  all$breastcancer3_Chang<-ifelse(all$breastcancer3_Chang=="BreastCancer",1,0)
+  table(all$breastcancer3_Chang)
+  
+  
+  all$breastcancer4_Chang<-all$Cancer.Diagnosis.4
+  all$breastcancer4_Chang<-as.character(all$breastcancer4_Chang)
+  all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem Left"]<-"BreastCancer"
+  all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem NOS"]<-"BreastCancer"
+  all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Fem Right"]<-"BreastCancer"
+  all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - in situ"]<-"BreastCancer"
+  all$breastcancer4_Chang[all$breastcancer4_Chang=="Breast - Male"]<-"BreastCancer"
+  all$breastcancer4_Chang<-ifelse(all$breastcancer4_Chang=="BreastCancer",1,0)
+  table(all$breastcancer4_Chang)
+  
+  all$breastcancer_ChangTotal<-all$breastcancer1_Chang+all$breastcancer2_Chang+all$breastcancer3_Chang+all$breastcancer4_Chang
+  
+  table(all$breastcancer_ChangTotal)
+  
+  table(all$Sex,all$breastcancer_ChangTotal)
+  
+  #'Excluding those having sex as Unknow
+  
+  all$sex<-as.character(all$Sex)
+  
+  allexU<-subset(all,all$Sex!="U")
+  
+  table(allexU$Sex)
+  table(allexU$breastcancer_ChangTotal)
+  
+  allexUexYO<-subset(allexU,allexU$Year.of.Birth<1999)
+  allexUexYO<-subset(allexUexYO,allexUexYO$Year.of.Birth>1939)
+  table(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0]) 
+  length(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0]) 
+  table(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1]) 
+  length(allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1]) 
+  
+  #' !!!SIZE * 1.5
+  
+  
+  #' 1920 2014
+  
+  sum(table(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0&allexUexYO$sex=="F"]))
+  mean(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+  mean(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+  median(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+  median(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+  sd(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal==0],na.rm=T)
+  sd(2019-allexUexYO$Year.of.Birth[allexUexYO$breastcancer_ChangTotal>=1],na.rm=T)
+  
+  table(allexUexYO$Sex[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Sex[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  table(allexUexYO$Age.at.Menopause[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Age.at.Menopause[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  
+  
+  table(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1])
+  mean(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0],na.rm = T)
+  mean(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1],na.rm = T)
+  sd(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal==0],na.rm = T)
+  sd(allexUexYO$Age.at.First.Mensus[allexUexYO$breastcancer_ChangTotal>=1],na.rm = T)
+  
+  table(allexUexYO$Cancer.Diagnosis.1[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Cancer.Diagnosis.1[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  table(allexUexYO$Cancer.Diagnosis.2[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Cancer.Diagnosis.2[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  table(allexUexYO$Cancer.Diagnosis.3[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Cancer.Diagnosis.3[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  table(allexUexYO$Family.Ancestry...Maternal.Grandfather[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Family.Ancestry...Maternal.Grandfather[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  table(allexUexYO$Family.Ancestry...Paternal.Grandmother[allexUexYO$breastcancer_ChangTotal==0])
+  table(allexUexYO$Family.Ancestry...Paternal.Grandmother[allexUexYO$breastcancer_ChangTotal>=1])
+  
+  sum(table(allexUexYO$dcis[allexUexYO$breastcancer_ChangTotal==0]))
+  sum(table(allexUexYO$BRCAR??sultat[allexUexYO$breastcancer_ChangTotal>=1]))
+  
+  table(all$Cancer.Diagnosis.1[all$Cancer.Diagnosis.1=="Breast - in situ"])
+  table(all$Cancer.Diagnosis.2[all$Cancer.Diagnosis.2=="Breast - in situ"])
+  table(all$Cancer.Diagnosis.3[all$Cancer.Diagnosis.3=="Breast - in situ"])
+  table(all$Cancer.Diagnosis.4[all$Cancer.Diagnosis.4=="Breast - in situ"])
+  
+  table(all$Cancer.Diagnosis.1.ICD9.Code)
+  table(all$Cancer.Diagnosis.2)
+  table(all$Cancer.Diagnosis.3)
+  table(all$Cancer.Diagnosis.4)
+  
+  #'#'#' Plot
+  
+  kf = KFold(n=len(y), n_folds=10)
+  
+  tprs = []
+  base_fpr = np.linspace(0, 1, 101)
+  
+  plt.figure(figsize=(5, 5))
+  
+  for i, (train, test) in enumerate(kf):
+    model = LogisticRegression().fit(X[train], y[train])
+  y_score = model.predict_proba(X[test])
+  fpr, tpr, _ = roc_curve(y[test], y_score[:, 1])
+  
+  plt.plot(fpr, tpr, 'b', alpha=0.15)
+  tpr = interp(base_fpr, fpr, tpr)
+  tpr[0] = 0.0
+  tprs.append(tpr)
+  
+  tprs = np.array(tprs)
+  mean_tprs = tprs.mean(axis=0)
+  std = tprs.std(axis=0)
+  
+  tprs_upper = np.minimum(mean_tprs + std, 1)
+  tprs_lower = mean_tprs - std
+  
+  
+  plt.plot(base_fpr, mean_tprs, 'b')
+  plt.fill_between(base_fpr, tprs_lower, tprs_upper, color='grey', alpha=0.3)
+  
+  plt.plot([0, 1], [0, 1],'r--')
+  plt.xlim([-0.01, 1.01])
+  plt.ylim([-0.01, 1.01])
+  plt.ylabel('True Positive Rate')
+  plt.xlabel('False Positive Rate')
+  plt.axes().set_aspect('equal', 'datalim')
+  plt.show()
+  
+  idx = np.arange(0, len(y))
+  
+  for j in np.random.randint(0, high=10000, size=10):
+    np.random.shuffle(idx)
+  kf = KFold(n=len(y), n_folds=10, random_state=j)
+  
+  for i, (train, test) in enumerate(kf):
+    model = "your method"().fit(X[idx][train], y[idx][train])
+  y_score = model.predict_proba(X[idx][test])
+  fpr, tpr, _ = roc_curve(y[idx][test], y_score[:, 1])
+  
+  plt.plot(fpr, tpr, 'b', alpha=0.05)
+  tpr = interp(base_fpr, fpr, tpr)
+  tpr[0] = 0.0
+  tprs.append(tpr)
+  
+  #'Gail absolut risk 
+  library("BCRA", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+  #'Simulated Gail no signal
+  Abrisk_Random<-risk.summary(sim_Gail_Random)
+  Abrisk_Random<-as.data.frame(Abrisk_Random)
+  str(Abrisk_Random)
+  Abrisk_Random$AbsRisk<-as.numeric(as.character(Abrisk_Random$AbsRisk))
+  mean(Abrisk_Random$AbsRisk)
+  Predition_Gail_Random <- ifelse(Abrisk_Random$AbsRisk<median(Abrisk_Random$AbsRisk), 0, 1)
+  table(Predition_Gail_Random)
+  sim_Gail_Random_prediction<-cbind(sim_Gail_Random,Predition_Gail_Random)
+  
+  
+  #' SIMUALTED DATA
+  #'Simulated Gail atifical signal
+  Abrisk_signal<-risk.summary(sim_Gail_signal)
+  Abrisk_signal<-as.data.frame(Abrisk_signal)
+  str(Abrisk_signal)
+  Abrisk_signal$AbsRisk<-as.numeric(as.character(Abrisk_signal$AbsRisk))
+  Predition_Gail_signal <- ifelse(Abrisk_signal$AbsRisk<median(Abrisk_signal$AbsRisk), 0, 1)
+  table(Predition_Gail_signal)
+  sim_Gail_signal_prediction<-cbind(sim_Gail_signal,Predition_Gail_signal)
+  
+  #'Calculate AUC 
+  library("crossval")
+  sim_GRan_AUC = crossval::confusionMatrix(sim_Gail_Random_prediction$Case_Random, sim_Gail_Random_prediction$Predition_Gail_Random, negative=0)
+  
+  #' FP  TP  TN  FN 
+  #'305 301 312 282
+  sim_GSig_AUC = confusionMatrix(sim_Gail_signal_prediction$Case_signalYN, sim_Gail_signal_prediction$Predition_Gail_signal, negative=0)
+  #' FP  TP  TN  FN 
+  #'361 245 306 288 
+  diagnosticErrors(sim_GRan_AUC)
+  #'       acc       sens       spec        ppv        npv        lor 
+  #'0.51083333 0.51629503 0.50567261 0.49669967 0.52525253 0.08789461
+  diagnosticErrors(sim_GSig_AUC)
+  #'       acc       sens       spec        ppv        npv        lor 
+  #'0.4591667  0.4596623  0.4587706  0.4042904  0.5151515 -0.3269951
+  
+  library(cvAUC)
+  
+  AUC(sim_Gail_Random_prediction$Predition_Gail_Random, sim_Gail_Random_prediction$Case_Random, label.ordering = NULL)
+  AUC(sim_Gail_signal_prediction$Predition_Gail_signal, sim_Gail_signal_prediction$Case_signalYN, label.ordering = NULL)
+  
+  #'Gail absolut risk 
+  Abrisk_signal_add_NA<-risk.summary(sim_Gail_signal_add_NA)
+  Abrisk_signal_add_NA<-as.data.frame(Abrisk_signal_add_NA)
+  str(Abrisk_signal_add_NA)
+  Abrisk_signal_add_NA$AbsRisk<-as.numeric(as.character(Abrisk_signal_add_NA$AbsRisk))
+  Predition_Gail_signal_add_NA <- ifelse(Abrisk_signal_add_NA$AbsRisk<median(Abrisk_signal_add_NA$AbsRisk), 0, 1)
+  table(Predition_Gail_signal_add_NA)
+  sim_Gail_signal_addNA_prediction<-cbind(sim_Gail_signal_add_NA,Predition_Gail_signal_add_NA)
+  
+  #'Calculate AUC 
+  sim_GSig_addNA_AUC = confusionMatrix(sim_Gail_signal_addNA_prediction$Case_signalYN, sim_Gail_signal_addNA_prediction$Predition_Gail_signal_add_NA, negative=0)
+  #' FP  TP  TN  FN 
+  #'381 223 286 310 
+  diagnosticErrors(sim_GSig_addNA_AUC)
+  #'      acc       sens       spec        ppv        npv        lor 
+  #'0.4241667  0.4183865  0.4287856  0.3692053  0.4798658 -0.6162081
+  
+  AUC(sim_Gail_signal_addNA_prediction$Predition_Gail_signal_add_NA, sim_Gail_signal_addNA_prediction$Case_signalYN, label.ordering = NULL)
+  
+  #'imputed1 gail risk
+  imputed1$HypPlas<-as.numeric(as.character(imputed1$HypPlas))
+  imputed1$Case_signalYN<-as.numeric(as.character(imputed1$Case_signalYN))
+  imputed1$Case_signalYN<-as.numeric(imputed1$Case_signalYN)
+  imputed1$AgeMen<-round(imputed1$AgeMen)
+  imputed1$Age1st<-round(imputed1$Age1st)
+  imputed1$N_Rels<-round(imputed1$N_Rels)
+  imputed1$N_Rels<-ifelse(imputed1$N_Rels<0,0,imputed1$N_Rels)
+  imputed1$Age1st<-ifelse(imputed1$Age1st<0,98,imputed1$Age1st)
+  imputed1$Age1st<-ifelse(imputed1$Age1st>45,40,imputed1$Age1st)
+  imputed1$Age1st<-ifelse(imputed1$Age1st<16,18,imputed1$Age1st)
+  imputed1$Age1st<-ifelse(imputed1$Age1st>imputed1$T1,T1,imputed1$Age1st)
+  table(imputed1$HypPlas)
+  str(imputed1)
+  Gail.imputed1 <- risk.summary(imputed1)
+  Gail.imputed1<-as.data.frame(Gail.imputed1)
+  str(Gail.imputed1)
+  Gail.imputed1$AbsRisk<-as.numeric(as.character(Gail.imputed1$AbsRisk))
+  str(Gail.imputed1)
+  Predition_Gail_imput1 <- ifelse(Gail.imputed1$AbsRisk<median(Gail.imputed1$AbsRisk,na.rm=T), 0, 1)
+  table(Predition_Gail_imput1)
+  sim_Gail_imput1_prediction<-cbind(imputed1,Predition_Gail_imput1)
+  
+  #'Calculate AUC 
+  sim_Gail_imput1_prediction_AUC = confusionMatrix(sim_Gail_imput1_prediction$Case_signalYN, sim_Gail_imput1_prediction$Predition_Gail_imput1, negative=0)
+  #' FP  TP  TN  FN 
+  #'359 241 308 292 
+  diagnosticErrors(sim_Gail_imput1_prediction_AUC)
+  #'      acc       sens       spec        ppv        npv        lor 
+  #'0.4575000  0.4521576  0.4617691  0.4016667  0.5133333 -0.3451795
+  
+  AUC(sim_Gail_imput1_prediction$Predition_Gail_imput1, sim_Gail_imput1_prediction$Case_signalYN, label.ordering = NULL)
+  
+  
+  #'Calibration Methods: Platt Scaling & Isotonic Regression
+  
+  #' reading the train dataset
+  train <-read.csv("train.csv")
+  
+  #' reading the test dataset
+  test <-read.csv("test.csv")
+  
+  #'converting the dependent variable into factor for classification purpose.
+  train$cancer1<-as.factor(train$cancer1)   
+  
+  #' removing the X column since it is irrelevant for our training and total colume column since it is perfectly correlated to number of donations
+  train<-train[-c(1,4)]
+  
+  #' splitting the train set into training and cross validation set using random sampling
+  set.seed(221)
+  sub <- sample(nrow(train), floor(nrow(train) * 0.85))
+  training<-train[sub,]
+  cv<-train[-sub,]
+  
+  #' training a random forest model without any feature engineering or pre-processing
+  library(randomForest)
+  model_rf<-randomForest(cancer1~.,data = training,keep.forest=TRUE,importance=TRUE)
+  
+  #'predicting on the cross validation dataset
+  result_cv<-as.data.frame(predict(model_rf,cv,type="prob"))   
+  
+  #'calculating Log Loss without Platt Scaling
+  LogLoss(as.numeric(as.character(cv$cancer1)),result_cv$`1`)   
+  
+  #' performing platt scaling on the dataset
+  dataframe<-data.frame(result_cv$`1`,cv$cancer1)
+  colnames(dataframe)<-c("x","y")
+  
+  #' training a logistic regression model on the cross validation dataset
+  model_log<-glm(y~x,data = dataframe,family = binomial)
+  
+  #'predicting on the cross validation after platt scaling
+  result_cv_platt<-predict(model_log,dataframe[-2],type = "response")
+  LogLoss(as.numeric(as.character(cv$cancer1)),result_cv_platt)
+  
+  #' plotting reliability plots
+  
+  #' The line below computes the reliability plot data for cross validation dataset without platt scaling
+  k <-reliability.plot(as.numeric(as.character(cv$cancer1)),result_cv$`1`,bins = 5)
+  lines(k$V2, k$V1, xlim=c(0,1), ylim=c(0,1), xlab="Mean Prediction", ylab="Observed Fraction", col="red", type="o", main="Reliability Plot")
+  
+  #'This line below computes the reliability plot data for cross validation dataset with platt scaling
+  k <-reliability.plot(as.numeric(as.character(cv$cancer1)),result_cv_platt,bins = 5)
+  lines(k$V2, k$V1, xlim=c(0,1), ylim=c(0,1), xlab="Mean Prediction", ylab="Observed Fraction", col="blue", type="o", main="Reliability Plot")
+  
+  legend("topright",lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"),legend = c("platt scaling","without plat scaling"))
+  
+  install.package(isoreg)
+  
+  fit.isoreg <- function(iso, x0)
+  {
+    o = iso$o
+    if (is.null(o))
+      o = 1:length(x)
+    x = iso$x[o]
+    y = iso$yf
+    ind = cut(x0, breaks = x, labels = FALSE, include.lowest = TRUE)
+    min.x <- min(x)
+    max.x <- max(x)
+    adjusted.knots <- iso$iKnots[c(1, which(iso$yf[iso$iKnots] > 0))]
+    fits = sapply(seq(along = x0), function(i) {
+      j = ind[i]
+      
+      #' Handles the case where unseen data is outside range of the training data
+      if (is.na(j)) {
+        if (x0[i] > max.x) j <- length(x)
+        else if (x0[i] < min.x) j <- 1
+      }
+      
+      #' Find the upper and lower parts of the step
+      upper.step.n <- min(which(adjusted.knots > j))
+      upper.step <- adjusted.knots[upper.step.n]
+      lower.step <- ifelse(upper.step.n==1, 1, adjusted.knots[upper.step.n -1] )
+      
+      #' Perform a liner interpolation between the start and end of the step
+      denom <- x[upper.step] - x[lower.step]
+      denom <- ifelse(denom == 0, 1, denom)
+      val <- y[lower.step] + (y[upper.step] - y[lower.step]) * (x0[i] - x[lower.step]) / (denom)
+      
+      #' Ensure we bound the probabilities to [0, 1]
+      val <- ifelse(val > 1, max.x, val)
+      val <- ifelse(val < 0, min.x, val)
+      val <- ifelse(is.na(val), max.x, val) #' Bit of a hack, NA when at right extreme of distribution
+      val
+    })
+    fits
+  }
+  
+  
+  #'This part of the code removes the duplicate predicted values of the cross validation set
+  idx <- duplicated(result_cv$`1`)
+  result_cv_unique <- result_cv$`1`[!idx]
+  cv$cancer1<-as.numeric(as.character(cv$cancer1))
+  cv_actual_unique<- cv$cancer1[!idx]
+  
+  #' This line of code creates an isotonic regression model on the cross validation dataset
+  iso.model <- isoreg(result_cv_unique, cv_actual_unique)
+  
+  plot(iso.model,plot.type = "row")
+  
+  #' Predicting the cross validation dataset after the isotonic regression
+  result_cv_isotonic <- fit.isoreg(iso.model, result_cv$`1`)
+  
+  #' plotting isotonic reliabililty plot
+  plot(c(0,1),c(0,1), col="grey",type="l",xlab = "Mean Prediction",ylab="Observed Fraction")
+  k<-reliability.plot(as.numeric(as.character(cv$cancer1)),result_cv$`1`,bins = 5)
+  lines(k$V2, k$V1, xlim=c(0,1), ylim=c(0,1), xlab="Mean Prediction", ylab="Observed Fraction", col="red", type="o", main="Reliability Plot")
+  k<-reliability.plot(as.numeric(as.character(cv$cancer1)),result_cv_isotonic,bins = 5)
+  lines(k$V2, k$V1, xlim=c(0,1), ylim=c(0,1), xlab="Mean Prediction", ylab="Observed Fraction", col="blue", type="o", main="Reliability Plot")
+  
+  legend("topright",lty=c(1,1),lwd=c(2.5,2.5),col=c("blue","red"),legend = c("isotonic scaling","without isotonic scaling"))
+  result_test_isotonic<-as.data.frame(fit.isoreg(iso.model,dataframe1$x))
+
+}
+
+
